@@ -14,8 +14,8 @@ def threaded(fn):
     return wrapper
 
 
-def _send(s, data):
-    s.send(hex(data))
+def _send(s, data: bytes):
+    s.send(data)
 
 
 class Device:
@@ -60,18 +60,19 @@ class Device:
 
     @threaded
     def beacon(self):
-        int_sockets = {}
-        # Create socket for each internal port
-        # Add every entry to dict {<port_name>: <socket>}
-        for port in self.int_ports:
-            int_sockets = int_sockets.update({port: socket(PF_PACKET, SOCK_RAW)})
-            int_sockets[port].bind((port, 0))
-        while self.BEACON_STATUS:
-            for port, s in int_sockets.items():
-                print("sending beacon on port " + str(port))
-                data = str(self.BEACON_HASH) + str(self.device_id) + str(port)
-                _send(s, data)
-            sleep(self.BEACON_INTERVAL)
+        if len(self.int_ports) > 0:
+            int_sockets = {}
+            # Create socket for each internal port
+            # Add every entry to dict {<port_name>: <socket>}
+            for port in self.int_ports:
+                int_sockets.update({port: socket(PF_PACKET, SOCK_RAW)})
+                int_sockets[port].bind((port, 0))
+            while self.BEACON_STATUS:
+                for port, s in int_sockets.items():
+                    print("sending beacon on port " + str(port))
+                    data = bytes(self.BEACON_HASH) + bytes(self.device_id) + bytes(port)
+                    _send(s, data)
+                sleep(self.BEACON_INTERVAL)
 
 
 if __name__ == '__main__':
