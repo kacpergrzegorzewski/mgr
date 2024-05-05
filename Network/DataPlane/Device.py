@@ -48,4 +48,4 @@ class Device:
 
 if __name__ == '__main__':
     device_id = hash("router02")
-    device = Device(device_id=device_id)
+    device = Device(device_id=device_id, int_ports=["ens16"])
