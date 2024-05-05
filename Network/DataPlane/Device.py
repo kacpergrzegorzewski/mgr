@@ -30,9 +30,9 @@ class Device:
         self.enforcement = Enforcement(ldb="../../DB/" + str(self.device_id) + ".db")
 
         if ext_ports is None:
-            ext_ports = []
+            self.ext_ports = []
         if int_ports is None:
-            int_ports = []
+            self.int_ports = []
 
         for ext_port in self.ext_ports:
             self.sniff(prn=self.ext_port_recv, iface=ext_port)
