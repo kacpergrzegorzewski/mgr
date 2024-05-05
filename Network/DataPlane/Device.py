@@ -1,5 +1,5 @@
 import threading
-from socket import PF_PACKET, SOCK_RAW, socket
+from socket import PF_PACKET, SOCK_RAW, socket, gethostname
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
 from time import sleep
@@ -75,5 +75,5 @@ class Device:
 
 
 if __name__ == '__main__':
-    device_id = hash("router02")
+    device_id = hash(gethostname())
     device = Device(device_id=device_id, int_ports=["ens16"])
