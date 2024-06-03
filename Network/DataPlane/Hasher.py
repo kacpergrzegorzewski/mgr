@@ -9,4 +9,4 @@ def hasher(data):
     return md5(data).digest()
 
 
-LENGTH = hasher("")
+LENGTH = hasher("".encode())
