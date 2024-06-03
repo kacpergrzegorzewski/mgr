@@ -6,5 +6,5 @@ def hash_pkt(pkt):
     print("hashing")
 
 
-def hash(data):
-    return md5(data)
+def hasher(data):
+    return md5(data).digest()

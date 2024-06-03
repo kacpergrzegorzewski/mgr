@@ -1,7 +1,7 @@
 import sqlite3
 
 
-class _LDB:
+class _LDBSQLite:
     def __init__(self, filename):
         print("Initializing LDB...")
         self._init_db(filename)

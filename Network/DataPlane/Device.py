@@ -3,7 +3,6 @@ from socket import PF_PACKET, SOCK_RAW, socket, gethostname
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
 from time import sleep
-from hashlib import md5
 from Enforcement import _Enforcement as Enforcement
 import Hasher
 
@@ -20,7 +19,8 @@ def _send(s, data: bytes):
 
 
 class Device:
-    BEACON_HASH = md5("".encode()).digest()
+
+    BEACON_HASH = Hasher.hasher("".encode())
     BEACON_INTERVAL = 15
     BEACON_STATUS = True
 
@@ -28,15 +28,21 @@ class Device:
         self.ext_ports = ext_ports
         self.int_ports = int_ports
         self.device_id = device_id
-        self.enforcement = Enforcement(ldb="../../DB/" + str(self.device_id) + ".db")
+        # Create enforcement with LDB located in DB folder and named same as device_id but converted to int
+        self.enforcement = Enforcement(ldb="../../DB/" + str(int.from_bytes(self.device_id)) + ".db")
 
+        # Default value for devices without external ports e.g. Core
         if ext_ports is None:
             self.ext_ports = []
+        # Default value for devices without internal ports (for testing purposes only)
         if int_ports is None:
             self.int_ports = []
 
+        # start sniffing on all external ports
         for ext_port in self.ext_ports:
             self.sniff(prn=self.ext_port_recv, iface=ext_port)
+
+        # start sniffing on all internal ports
         for int_port in self.int_ports:
             self.sniff(prn=self.int_port_recv, iface=int_port)
 
@@ -45,14 +51,28 @@ class Device:
 
     @threaded
     def sniff(self, prn, iface):
+        """
+        Sniff for packets on interface
+        :param prn:  function which will be triggered for every packet
+        :param iface: name of interface
+        :return: None
+        """
         sniff(prn=prn, iface=iface)
 
     def ext_port_recv(self, pkt):
+        """
+        Function triggered for every packet received on external port
+        :param pkt: received packet
+        """
         data = bytes_hex(pkt)
         print("\next packet:")
         print(pkt)
 
     def int_port_recv(self, pkt):
+        """
+        Function triggered for every packet received on internal port
+        :param pkt: received packet
+        """
         data = bytes_hex(pkt)
         hash = data[0:Hasher.LENGTH]
         print("\nint packet:")
@@ -61,6 +81,9 @@ class Device:
 
     @threaded
     def beacon(self):
+        """
+        Threaded function which sends beacon on all internal interfaces every BEACON_INTERVAL
+        """
         if len(self.int_ports) > 0:
             int_sockets = {}
             # Create socket for each internal port
@@ -69,15 +92,17 @@ class Device:
                 int_sockets.update({port: socket(PF_PACKET, SOCK_RAW)})
                 int_sockets[port].bind((port, 0))
             while self.BEACON_STATUS:
+                # send beacon on all internal sockets (created few lines above)
                 for port, s in int_sockets.items():
                     print("sending beacon on port " + str(port))
                     print(type(port))
                     data = self.BEACON_HASH + self.device_id + port.encode()
                     _send(s, data)
+                # wait BEACON_INTERVAL before sending next beacon
                 sleep(self.BEACON_INTERVAL)
 
 
 if __name__ == '__main__':
-    device_id = md5(gethostname().encode()).digest()
+    device_id = Hasher.hasher(gethostname().encode())
     print(device_id)
     device = Device(device_id=device_id, int_ports=["ens16"])
