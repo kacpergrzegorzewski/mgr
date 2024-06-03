@@ -29,7 +29,7 @@ class Device:
         self.int_ports = int_ports
         self.device_id = device_id
         # Create enforcement with LDB located in DB folder and named same as device_id but converted to int
-        self.enforcement = Enforcement(ldb="../../DB/" + str(int.from_bytes(self.device_id)) + ".db")
+        self.enforcement = Enforcement(ldb="../../DB/" + str(int.from_bytes(self.device_id, "big")) + ".db")
 
         # Default value for devices without external ports e.g. Core
         if ext_ports is None:
