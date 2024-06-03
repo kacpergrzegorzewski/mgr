@@ -1,6 +1,5 @@
 from hashlib import md5
 
-LENGTH = hash("")
 
 def hash_pkt(pkt):
     print("hashing")
@@ -8,3 +7,6 @@ def hash_pkt(pkt):
 
 def hasher(data):
     return md5(data).digest()
+
+
+LENGTH = hasher("")
