@@ -3,6 +3,7 @@ from socket import PF_PACKET, SOCK_RAW, socket, gethostname
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
 from time import sleep
+from hashlib import md5
 from Enforcement import _Enforcement as Enforcement
 import Hasher
 
@@ -19,11 +20,11 @@ def _send(s, data: bytes):
 
 
 class Device:
-    BEACON_HASH = hash("")
+    BEACON_HASH = md5("".encode()).digest()
     BEACON_INTERVAL = 15
     BEACON_STATUS = True
 
-    def __init__(self, device_id: int, ext_ports=None, int_ports=None):
+    def __init__(self, device_id, ext_ports=None, int_ports=None):
         self.ext_ports = ext_ports
         self.int_ports = int_ports
         self.device_id = device_id
@@ -70,11 +71,13 @@ class Device:
             while self.BEACON_STATUS:
                 for port, s in int_sockets.items():
                     print("sending beacon on port " + str(port))
-                    data = bytes(self.BEACON_HASH) + bytes(self.device_id) + bytes(port)
+                    print(type(port))
+                    data = self.BEACON_HASH + self.device_id + port.encode()
                     _send(s, data)
                 sleep(self.BEACON_INTERVAL)
 
 
 if __name__ == '__main__':
-    device_id = hash(gethostname())
+    device_id = md5(gethostname().encode()).digest()
+    print(device_id)
     device = Device(device_id=device_id, int_ports=["ens16"])
