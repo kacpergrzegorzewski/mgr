@@ -9,7 +9,9 @@ class _LDBSQLite:
     def _init_db(self, filename):
         self.db = sqlite3.connect(filename)
         self.cursor = self.db.cursor()
-        self.cursor.execute("CREATE TABLE ldb(hash, outport, endtime)")
+        result = self.cursor.execute("PRAGMA table_info(ldb)")
+        if result is None:
+                self.cursor.execute("CREATE TABLE ldb(hash, outport, endtime)")
 
     def get_outport(self, hash):
         return self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,))

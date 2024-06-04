@@ -78,6 +78,7 @@ class Device:
         print("\nint packet:")
         print("hash" + str(hash))
         print(bytes_hex(pkt))
+        print("hash length: " + str(Hasher.LENGTH))
 
     @threaded
     def beacon(self):
