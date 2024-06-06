@@ -10,4 +10,4 @@ def edge(pkt):
     print(pkt)
 
 
-sniff(prn=edge, iface="ens16")
+sniff(prn=mod, iface="ens16")
