@@ -89,13 +89,11 @@ class Device:
         :param pkt: received packet
         """
         data = raw(pkt)
-        print("\n lastPacket.values(): " + str(self.lastPacket.values()))
-        print("data: " + str(data))
         if data not in self.lastPacket.values():
             hash = data[0:Hasher.LENGTH]
             print("\nint packet:")
             # print("hash" + str(hash))
-            print(bytes_hex(pkt))
+            print(data)
             # print("hash length: " + str(Hasher.LENGTH))
 
     @threaded
