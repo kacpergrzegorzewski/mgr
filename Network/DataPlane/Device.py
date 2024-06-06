@@ -92,9 +92,9 @@ class Device:
         if data not in self.lastPacket.values():
             hash = data[0:Hasher.LENGTH]
             print("\nint packet:")
-            # print("hash" + str(hash))
+            print("Received hash: " + str(hash))
             print(data)
-            # print("hash length: " + str(Hasher.LENGTH))
+            #print("hash length: " + str(Hasher.LENGTH))
 
     @threaded
     def beacon(self):
