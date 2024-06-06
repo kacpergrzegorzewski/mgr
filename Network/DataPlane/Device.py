@@ -14,13 +14,9 @@ def threaded(fn):
     return wrapper
 
 
-
-
-
 class Device:
-
     BEACON_HASH = Hasher.hasher("".encode())
-    BEACON_INTERVAL = 15
+    BEACON_INTERVAL = 2
     BEACON_STATUS = True
 
     def __init__(self, device_id, ext_ifaces=None, int_ifaces=None):
@@ -65,7 +61,6 @@ class Device:
 
     def _send(self, iface, data: bytes):
         self.lastPacket[iface] = data
-        print("\nLast packet: " + str(data))
         self.sockets[iface].send(data)
 
     @threaded
@@ -93,12 +88,14 @@ class Device:
         :param pkt: received packet
         """
         data = bytes_hex(pkt)
+        print("\n lastPacket.values(): " + str(self.lastPacket.values()))
+        print("data: " + str(data))
         if data not in self.lastPacket.values():
             hash = data[0:Hasher.LENGTH]
             print("\nint packet:")
-            print("hash" + str(hash))
-            print(bytes_hex(pkt))
-            print("hash length: " + str(Hasher.LENGTH))
+            # print("hash" + str(hash))
+            # print(bytes_hex(pkt))
+            # print("hash length: " + str(Hasher.LENGTH))
 
     @threaded
     def beacon(self):
