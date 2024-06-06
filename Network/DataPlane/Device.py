@@ -2,6 +2,7 @@ import threading
 from socket import PF_PACKET, SOCK_RAW, socket, gethostname
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
+from scapy.packet import raw
 from time import sleep
 from Enforcement import _Enforcement as Enforcement
 import Hasher
@@ -78,7 +79,7 @@ class Device:
         Function triggered for every packet received on external iface
         :param pkt: received packet
         """
-        data = bytes_hex(pkt)
+        data = raw(pkt)
         print("\next packet:")
         print(pkt)
 
@@ -87,14 +88,14 @@ class Device:
         Function triggered for every packet received on internal iface
         :param pkt: received packet
         """
-        data = bytes_hex(pkt)
+        data = raw(pkt)
         print("\n lastPacket.values(): " + str(self.lastPacket.values()))
         print("data: " + str(data))
         if data not in self.lastPacket.values():
             hash = data[0:Hasher.LENGTH]
             print("\nint packet:")
             # print("hash" + str(hash))
-            # print(bytes_hex(pkt))
+            print(bytes_hex(pkt))
             # print("hash length: " + str(Hasher.LENGTH))
 
     @threaded
