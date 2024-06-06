@@ -92,6 +92,7 @@ class Device:
         if data not in self.lastPacket.values():
             hash = data[0:Hasher.LENGTH]
             print("\nint packet:")
+            print("interface: " + str(pkt.sniffed_on))
             print("Received hash: " + str(hash))
             print(data)
             #print("hash length: " + str(Hasher.LENGTH))
