@@ -92,7 +92,8 @@ class Device:
         data = raw(pkt)
         if data not in self.lastPacket.values():
             pkt = InternalPacket(pkt)
-            print(pkt.hash)
+            outport = self.enforcement.enforce(pkt.hash)
+            print(outport)
 
     @threaded
     def beacon(self):
