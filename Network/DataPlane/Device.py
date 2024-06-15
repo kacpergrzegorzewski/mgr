@@ -6,7 +6,7 @@ from scapy.packet import raw
 from time import sleep
 from Enforcement import _Enforcement as Enforcement
 import Hasher
-from Network.Base.InternalPacket import InternalPacket
+from ..Base.InternalPacket import InternalPacket
 
 
 def threaded(fn):
