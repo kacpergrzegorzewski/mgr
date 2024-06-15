@@ -10,7 +10,7 @@ class LDBSQLite:
         self.db = sqlite3.connect(filename, check_same_thread=False)
         self.cursor = self.db.cursor()
         result = self.cursor.execute("PRAGMA table_info(ldb)")
-        if result is None:
+        if result.fetchone() is None:
             self.cursor.execute("CREATE TABLE ldb(hash, outport, endtime)")
 
     def get_outport(self, hash):
