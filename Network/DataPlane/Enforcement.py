@@ -1,4 +1,4 @@
-from LDB import _LDBSQLite as LDBSQLite
+from .LDB import _LDBSQLite as LDBSQLite
 
 
 class _Enforcement:

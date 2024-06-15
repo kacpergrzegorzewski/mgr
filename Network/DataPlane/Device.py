@@ -4,8 +4,8 @@ from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
 from scapy.packet import raw
 from time import sleep
-from Enforcement import _Enforcement as Enforcement
-import Hasher
+from .Enforcement import _Enforcement as Enforcement
+from . import Hasher
 from ..Base.InternalPacket import InternalPacket
 
 
@@ -21,12 +21,12 @@ class Device:
     BEACON_INTERVAL = 2
     BEACON_STATUS = True
 
-    def __init__(self, device_id, configurator_hash, ext_ifaces=None, int_ifaces=None):
+    def __init__(self, device_id, configurator_hash, ldb, ext_ifaces=None, int_ifaces=None):
         self.ext_ifaces = ext_ifaces
         self.int_ifaces = int_ifaces
         self.device_id = device_id
         # Create enforcement with LDB located in DB folder and named same as device_id but converted to int
-        self.enforcement = Enforcement(ldb="../../DB/" + str(int.from_bytes(self.device_id, "big")) + ".db")
+        self.enforcement = Enforcement(ldb=ldb + str(int.from_bytes(self.device_id, "big")) + ".db")
 
         # Dict interface_name: last_send_packet_on_interface.
         # It turned out that scapy sniff() function also receives last send packets on interface.
