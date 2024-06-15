@@ -17,7 +17,7 @@ class LDBSQLite:
         return self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,))
 
     def put(self, hash, outport, endtime="2099-01-01 12:00:00"):
-        cursor.execute("INSERT INTO ldb(hash,outport,endtime) VALUES(?,?,?)", (hash, outport, endtime))
+        self.cursor.execute("INSERT INTO ldb(hash,outport,endtime) VALUES(?,?,?)", (hash, outport, endtime))
 
 if __name__ == '__main__':
     filename = "../../DB/LDB-test01.db"
