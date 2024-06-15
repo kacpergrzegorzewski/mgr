@@ -26,7 +26,7 @@ class Device:
         self.int_ifaces = int_ifaces
         self.device_id = device_id
         # Create enforcement with LDB located in DB folder and named same as device_id but converted to int
-        self.enforcement = Enforcement(ldb=ldb + str(int.from_bytes(self.device_id, "big")) + ".db")
+        self.enforcement = Enforcement(ldb=ldb)
 
         # Dict interface_name: last_send_packet_on_interface.
         # It turned out that scapy sniff() function also receives last send packets on interface.
