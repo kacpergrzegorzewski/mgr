@@ -6,6 +6,7 @@ from scapy.packet import raw
 from time import sleep
 from Enforcement import _Enforcement as Enforcement
 import Hasher
+from Network.Base.InternalPacket import InternalPacket
 
 
 def threaded(fn):
@@ -20,7 +21,7 @@ class Device:
     BEACON_INTERVAL = 2
     BEACON_STATUS = True
 
-    def __init__(self, device_id, ext_ifaces=None, int_ifaces=None):
+    def __init__(self, device_id, configurator_hash, ext_ifaces=None, int_ifaces=None):
         self.ext_ifaces = ext_ifaces
         self.int_ifaces = int_ifaces
         self.device_id = device_id
@@ -90,11 +91,8 @@ class Device:
         """
         data = raw(pkt)
         if data not in self.lastPacket.values():
-            hash = data[0:Hasher.LENGTH]
-            print("\nint packet:")
-            print("Received hash: " + str(hash))
-            print(data)
-            #print("hash length: " + str(Hasher.LENGTH))
+            pkt = InternalPacket(pkt)
+            print(pkt.hash)
 
     @threaded
     def beacon(self):
@@ -120,5 +118,6 @@ class Device:
 
 if __name__ == '__main__':
     device_id = Hasher.hasher(gethostname().encode())
+    configurator_hash = Hasher.hasher("configurator".encode())
     print(device_id)
-    device = Device(device_id=device_id, int_ifaces=["ens16"])
+    device = Device(device_id=device_id, configurator_hash=configurator_hash, int_ifaces=["ens16"])

@@ -1,4 +1,4 @@
-from LDB import _LDBSQLite as LDB
+from LDB import _LDBSQLite as LDBSQLite
 
 
 class _Enforcement:
@@ -10,8 +10,9 @@ class _Enforcement:
         """
         print("Initializing Enforcement")
         if ldb_type == "sqlite":
-            self.ldb = LDB(ldb)
+            self.ldb = LDBSQLite(ldb)
     # TODO other LDB types e.g. mysql
 
     def enforce(self, hash):
+        outport = self.ldb.get_outport(hash)
         print("enforcing " + str(hash))
