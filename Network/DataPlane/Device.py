@@ -20,10 +20,10 @@ def threaded(fn):
 class Device:
     BEACON_STATUS = True
 
-    def __init__(self, device_id, configurator_hash, ldb, ext_ifaces=None, int_ifaces=None):
+    def __init__(self, device_hash, configurator_hash, ldb, ext_ifaces=None, int_ifaces=None):
         self.ext_ifaces = ext_ifaces
         self.int_ifaces = int_ifaces
-        self.device_id = device_id
+        self.device_hash = device_hash
         # Create enforcement with LDB located in DB folder and named same as device_id but converted to int
         self.enforcement = Enforcement(ldb=ldb)
 
@@ -92,9 +92,12 @@ class Device:
         if data not in self.lastPacket.values():
             pkt = InternalPacket(pkt)
             if pkt.beacon:
-                print("\nReceived Beacon from " + str(pkt.beacon_device_id) +
-                      ". Local interface: " + pkt.iface +
+                print("\nReceived Beacon from " + str(pkt.beacon_device_hash) +
+                      ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
+                data = CONFIGURATOR_HASH + self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
+                # TODO
+                print("TODO Sending data to configurator: " + str(data))
             else:
                 print("\nReceived internal packet with hash: " + pkt.hash)
 
@@ -114,7 +117,7 @@ class Device:
                 # send beacon on all internal interfaces
                 for iface in self.int_ifaces:
                     print("\nsending beacon on interface " + str(iface))
-                    data = BEACON_HASH + self.device_id + iface.encode()
+                    data = BEACON_HASH + self.device_hash + iface.encode()
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon
                 sleep(BEACON_INTERVAL)
