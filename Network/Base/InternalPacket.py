@@ -1,7 +1,7 @@
 from scapy.layers.l2 import Ether
 from scapy.packet import raw
 from Network.DataPlane import Hasher
-from Env import *
+from .Env import *
 
 
 class InternalPacket:
