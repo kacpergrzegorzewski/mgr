@@ -91,8 +91,10 @@ class Device:
         data = raw(pkt)
         if data not in self.lastPacket.values():
             pkt = InternalPacket(pkt)
-            if pkt.hash == BEACON_HASH:
-                print("\nReceived Beacon on: " + pkt.iface)
+            if pkt.beacon:
+                print("\nReceived Beacon from " + str(pkt.beacon_device_id) +
+                      ". Local interface: " + pkt.iface +
+                      ". Remote interface: " + str(pkt.beacon_iface))
             else:
                 print("\nReceived internal packet with hash: " + pkt.hash)
 
