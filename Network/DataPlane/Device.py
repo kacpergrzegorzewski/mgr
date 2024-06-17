@@ -7,6 +7,7 @@ from time import sleep
 from .Enforcement import _Enforcement as Enforcement
 from . import Hasher
 from ..Base.InternalPacket import InternalPacket
+from ..Base.Env import *
 
 
 def threaded(fn):
@@ -17,8 +18,6 @@ def threaded(fn):
 
 
 class Device:
-    BEACON_HASH = Hasher.hasher("".encode())
-    BEACON_INTERVAL = 2
     BEACON_STATUS = True
 
     def __init__(self, device_id, configurator_hash, ldb, ext_ifaces=None, int_ifaces=None):
@@ -92,7 +91,7 @@ class Device:
         data = raw(pkt)
         if data not in self.lastPacket.values():
             pkt = InternalPacket(pkt)
-            if pkt.hash == self.BEACON_HASH:
+            if pkt.hash == BEACON_HASH:
                 print("\nReceived Beacon on: " + pkt.iface)
             else:
                 print("\nReceived internal packet with hash: " + pkt.hash)
@@ -113,8 +112,8 @@ class Device:
                 # send beacon on all internal interfaces
                 for iface in self.int_ifaces:
                     print("\nsending beacon on interface " + str(iface))
-                    data = self.BEACON_HASH + self.device_id + iface.encode()
+                    data = BEACON_HASH + self.device_id + iface.encode()
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon
-                sleep(self.BEACON_INTERVAL)
+                sleep(BEACON_INTERVAL)
 
