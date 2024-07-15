@@ -1,4 +1,5 @@
 import threading
+import time
 from socket import PF_PACKET, SOCK_RAW, socket, gethostname
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
@@ -64,6 +65,32 @@ class Device:
         self.lastPacket[iface] = data
         self.sockets[iface].send(data)
 
+    def _send_wait(self, hash, data):
+        current_wait_time = MIN_PKT_WAIT
+        outport = self.enforcement.enforce(hash)
+        # outport not in LDB
+        if outport is None:
+            # find policy engine path
+            policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_HASH)
+            if policy_engine_outport is None:
+                print("[ERROR] Policy engine outport not found in LDB!")
+            else:
+                # send request to policy engine
+                self._send(policy_engine_outport, POLICY_ENGINE_HASH + hash + data)
+                # wait for LDB reconfiguration
+                while current_wait_time < MAX_PKT_WAIT:
+                    outport = self.enforcement.enforce(hash)
+                    if outport is not None:
+                        print("Sending data to" + str(hash) + " via " + str(outport))
+                        self._send(outport, data)
+                        break
+                    time.sleep(current_wait_time)
+                    current_wait_time *= 2
+        # outport in LDB
+        else:
+            print("Sending data to" + str(hash) + " via " + str(outport))
+            self._send(outport, data)
+
     @threaded
     def sniff(self, prn, iface):
         """
@@ -96,8 +123,7 @@ class Device:
                       ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
                 data = CONFIGURATOR_HASH + self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
-                # TODO
-                print("TODO Sending data to configurator: " + str(data))
+                self._send_wait(CONFIGURATOR_HASH, data)
             else:
                 print("\nReceived internal packet with hash: " + pkt.hash)
 
