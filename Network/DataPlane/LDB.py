@@ -14,7 +14,11 @@ class LDBSQLite:
             self.cursor.execute("CREATE TABLE ldb(hash BLOB PRIMARY KEY ON CONFLICT REPLACE, outport, endtime)")
 
     def get_outport(self, hash):
-        return self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()[0]
+        response = self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()
+        if response is None:
+            return None
+        else:
+            return response[0]
 
     def get_all(self):
         return self.cursor.execute("SELECT * FROM ldb").fetchall()
