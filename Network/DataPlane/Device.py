@@ -82,14 +82,14 @@ class Device:
                     outport = self.enforcement.enforce(hash)
                     if outport is not None:
                         print("Sending data to" + str(hash) + " via " + str(outport))
-                        self._send(outport, data)
+                        self._send(outport, hash + data)
                         break
                     time.sleep(current_wait_time)
                     current_wait_time *= 2
         # outport in LDB
         else:
             print("Sending data to" + str(hash) + " via " + str(outport))
-            self._send(outport, data)
+            self._send(outport, hash + data)
 
     @threaded
     def sniff(self, prn, iface):
@@ -122,7 +122,7 @@ class Device:
                 print("\nReceived Beacon from " + str(pkt.beacon_device_hash) +
                       ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
-                data = CONFIGURATOR_HASH + self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
+                data = self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
                 self._send_wait(CONFIGURATOR_HASH, data)
             else:
                 print("\nReceived internal packet with hash: " + pkt.hash)
