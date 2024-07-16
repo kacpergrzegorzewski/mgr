@@ -90,7 +90,7 @@ class Device:
                     current_wait_time *= 2
         # outport in LDB
         else:
-            print("Sending data to" + str(hash) + " via " + str(outport))
+            print("Sending data to " + str(hash) + " via " + str(outport))
             self._send(outport, hash + data)
 
     @threaded
@@ -127,7 +127,7 @@ class Device:
                 data = self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
                 self._send_wait(CONFIGURATOR_HASH, data)
             else:
-                print("\nReceived internal packet with hash: " + pkt.hash)
+                print("\nReceived internal packet with hash: " + str(pkt.hash))
 
     @threaded
     def beacon(self):
