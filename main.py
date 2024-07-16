@@ -21,4 +21,4 @@ def ldb_test():
 
 
 if __name__ == '__main__':
-    ldb_test()
+    start_device()
