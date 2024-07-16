@@ -3,13 +3,14 @@ from socket import gethostname
 from Network.DataPlane.Device import Device
 from Network.DataPlane.LDB import LDBSQLite
 from Network.Base.Env import *
+import yaml
 
-def start_device():
-    device_hash = Hasher.hasher(gethostname().encode())
-    configurator_hash = Hasher.hasher("configurator".encode())
-    print(device_hash)
-    ldb = LDBSQLite("/opt/mgr/ldb/" + str(int.from_bytes(device_hash, "big")) + ".db")
-    device = Device(device_hash=device_hash, configurator_hash=configurator_hash, ldb=ldb, int_ifaces=["ens16", "ens28", "ens17", "ens27"])
+def start_device(device_name, ldb_path, configurator_via, int_ifaces, ext_ifaces):
+    device_hash = Hasher.hasher(device_name.encode())
+    print("[INFO] Starting device " + str(device_hash))
+    ldb = LDBSQLite(ldb_path)
+    add_configurator_path(ldb, configurator_via)
+    device = Device(device_hash=device_hash, ldb=ldb, int_ifaces=int_ifaces, ext_ifaces=ext_ifaces)
 
 def ldb_test():
     hash = b'\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\t\x98\xec\xf8B~'
@@ -19,12 +20,18 @@ def ldb_test():
 #    print(ldb.get_all())
     ldb.put(hash, "ens16")
 
-def add_configurator_path(iface):
-    device_hash = Hasher.hasher(gethostname().encode())
-    ldb = LDBSQLite("/opt/mgr/ldb/" + str(int.from_bytes(device_hash, "big")) + ".db")
+def add_configurator_path(ldb, iface):
     ldb.put(CONFIGURATOR_HASH, iface)
-    print(ldb.get_outport(CONFIGURATOR_HASH))
+    print("[INFO] Path to configurator via: " + str(ldb.get_outport(CONFIGURATOR_HASH)))
 
 if __name__ == '__main__':
-    start_device()
+    with open('config.yaml', 'r') as configfile:
+        config = yaml.safe_load(configfile)
+    if config["type"] == "device":
+        start_device(config["spec"]["nodeName"],
+                     config["spec"]["device"]["LDBPath"],
+                     config["spec"]["device"]["configuratorVia"],
+                     config["spec"]["device"]["intIfaces"],
+                     config["spec"]["device"]["extIfaces"])
+    #start_device()
 #    add_configurator_path("ens27")

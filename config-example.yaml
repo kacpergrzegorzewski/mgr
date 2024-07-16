@@ -1,0 +1,9 @@
+type: device # device, configurator, policy-engine
+spec:
+  nodeName: "node01"
+  device: # device specific
+    intIfaces: ["ens16"]
+    extIfaces: []
+    LDBType: "SQLite"
+    LDBPath: ""
+    configuratorVia: "ens16"

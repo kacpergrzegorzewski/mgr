@@ -21,7 +21,7 @@ def threaded(fn):
 class Device:
     BEACON_STATUS = True
 
-    def __init__(self, device_hash, configurator_hash, ldb, ext_ifaces=None, int_ifaces=None):
+    def __init__(self, device_hash, ldb, ext_ifaces=None, int_ifaces=None):
         self.ext_ifaces = ext_ifaces
         self.int_ifaces = int_ifaces
         self.device_hash = device_hash
