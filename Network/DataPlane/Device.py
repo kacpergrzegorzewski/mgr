@@ -72,6 +72,8 @@ class Device:
         if outport is None:
             # find policy engine path
             policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_HASH)
+            if hash == CONFIGURATOR_HASH:
+                print("[ERROR] Configurator outport not found in LDB!")
             if policy_engine_outport is None:
                 print("[ERROR] Policy engine outport not found in LDB!")
             else:
