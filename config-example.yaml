@@ -7,3 +7,5 @@ spec:
     LDBType: "SQLite"
     LDBPath: ""
     configuratorVia: "ens16"
+  configurator:
+    iface: ""
