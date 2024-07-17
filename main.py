@@ -21,8 +21,8 @@ def ldb_test():
     ldb.put(hash, "ens16")
 
 def add_configurator_path(ldb, iface):
-    ldb.put(CONFIGURATOR_HASH, iface)
-    print("[INFO] Path to configurator via: " + str(ldb.get_outport(CONFIGURATOR_HASH)))
+    ldb.put(CONFIGURATOR_LINK_DISCOVERY_HASH, iface)
+    print("[INFO] Path to configurator via: " + str(ldb.get_outport(CONFIGURATOR_LINK_DISCOVERY_HASH)))
 
 if __name__ == '__main__':
     with open('config.yaml', 'r') as configfile:

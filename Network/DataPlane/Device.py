@@ -3,7 +3,7 @@ import time
 from socket import PF_PACKET, SOCK_RAW, socket, gethostname
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
-from scapy.packet import raw
+from scapy import packet
 from time import sleep
 from .Enforcement import _Enforcement as Enforcement
 from . import Hasher
@@ -72,7 +72,7 @@ class Device:
         if outport is None:
             # find policy engine path
             policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_HASH)
-            if hash == CONFIGURATOR_HASH:
+            if hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
                 print("[ERROR] Configurator outport not found in LDB!")
             if policy_engine_outport is None:
                 print("[ERROR] Policy engine outport not found in LDB!")
@@ -108,7 +108,7 @@ class Device:
         Function triggered for every packet received on external iface
         :param pkt: received packet
         """
-        data = raw(pkt)
+        raw = packet.raw(pkt)
         print("\next packet:")
         print(pkt)
 
@@ -117,15 +117,15 @@ class Device:
         Function triggered for every packet received on internal iface
         :param pkt: received packet
         """
-        data = raw(pkt)
-        if data not in self.lastPacket.values():
+        raw = packet.raw(pkt)
+        if raw not in self.lastPacket.values():
             pkt = InternalPacket(pkt)
             if pkt.beacon:
                 print("\nReceived Beacon from " + str(pkt.beacon_device_hash) +
                       ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
                 data = self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
-                self._send_wait(CONFIGURATOR_HASH, data)
+                self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data)
             else:
                 print("\nReceived internal packet with hash: " + str(pkt.hash))
 
