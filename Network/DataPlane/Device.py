@@ -120,7 +120,7 @@ class Device:
         raw = packet.raw(pkt)
         if raw not in self.lastPacket.values():
             pkt = InternalPacket(pkt)
-            if pkt.beacon:
+            if pkt.hash == BEACON_HASH:
                 print("\nReceived Beacon from " + str(pkt.beacon_device_hash) +
                       ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
@@ -128,6 +128,7 @@ class Device:
                 self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data)
             else:
                 print("\nReceived internal packet with hash: " + str(pkt.hash))
+                self._send_wait(pkt.hash, pkt.data)
 
     @threaded
     def beacon(self):
