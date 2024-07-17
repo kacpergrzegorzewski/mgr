@@ -40,6 +40,7 @@ class Configurator:
     def recv(self, pkt):
         internal_packet = InternalPacket(pkt)
         if internal_packet.hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
+            print("Received packet: " + str(internal_packet.raw_pkt))
             self.add_node(internal_packet.link_discovery_src_hash)
             self.add_node(internal_packet.link_discovery_dst_hash)
             self.add_edge(
@@ -52,9 +53,9 @@ class Configurator:
     def add_node(self, node):
         if node not in self.tdb.nodes:
             self.tdb.add_node(node)
-            print("[INFO] Added node " + node + " to TDB.")
+            print("[INFO] Added node " + str(node) + " to TDB.")
         else:
-            print("[INFO] Node " + node + " exists.")
+            print("[INFO] Node " + str(node) + " exists.")
 
     def add_edge(self, start, end, src_iface, dst_iface):
         if start and end in self.tdb.nodes:

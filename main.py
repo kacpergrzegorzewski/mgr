@@ -41,7 +41,7 @@ if __name__ == '__main__':
                      config["spec"]["device"]["configuratorVia"],
                      config["spec"]["device"]["intIfaces"],
                      config["spec"]["device"]["extIfaces"])
-    elif config["type"] == "config":
+    elif config["type"] == "configurator":
         start_configurator(config["spec"]["configurator"]["iface"])
     # start_device()
 #    add_configurator_path("ens27")

@@ -1,4 +1,4 @@
-interfaces=( ens16 ens17 ens27 ens28 )
+interfaces=( ens16 )
 
 for interface in "${interfaces[@]}"
 do
