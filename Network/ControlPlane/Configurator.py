@@ -69,11 +69,11 @@ class Configurator:
             print("===============================================================")
             print("Current TDB state:")
             for edge in self.tdb.edges:
-                src_node = str(edge[0])
-                dst_node = str(edge[1])
+                src_node = edge[0]
+                dst_node = edge[1]
                 src_iface = self.tdb.edges[src_node, dst_node]["src_iface"]
                 dst_iface = self.tdb.edges[src_node, dst_node]["dst_iface"]
-                print(src_node + " (" + src_iface + ")-> " + dst_node + "(" + dst_iface + ")")
+                print(str(src_node) + " (" + str(src_iface) + ")-> " + str(dst_node) + "(" + str(dst_iface) + ")")
             print("===============================================================")
             time.sleep(self.TDB_PRINT_INTERVAL)
 
