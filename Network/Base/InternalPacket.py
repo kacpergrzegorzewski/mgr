@@ -17,9 +17,7 @@ class InternalPacket:
             #  data schema: |#########################|##########|####################|##########|
             #                         src_hash          src_iface       dst_hash        dst_iface
             self.link_discovery_src_hash = self.data[0:Hasher.LENGTH]
-            self.link_discovery_src_iface = self.data[Hasher.LENGTH:Hasher.LENGTH+IFACE_NAME_LENGTH]
+            self.link_discovery_src_iface = self.data[Hasher.LENGTH:Hasher.LENGTH+IFACE_NAME_LENGTH].decode()
             self.link_discovery_dst_hash = self.data[Hasher.LENGTH+IFACE_NAME_LENGTH:2*Hasher.LENGTH+IFACE_NAME_LENGTH]
-            self.link_discovery_dst_iface = self.data[2*Hasher.LENGTH+IFACE_NAME_LENGTH:2*Hasher.LENGTH+2*IFACE_NAME_LENGTH]
-        else:
-            self.beacon = False
+            self.link_discovery_dst_iface = self.data[2*Hasher.LENGTH+IFACE_NAME_LENGTH:2*Hasher.LENGTH+2*IFACE_NAME_LENGTH].decode()
 
