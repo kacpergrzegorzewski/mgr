@@ -6,7 +6,7 @@ import networkx as nx
 
 from ..Base.Env import *
 from ..Base.InternalPacket import InternalPacket
-from TDB import TDB
+from .TDB import TDB
 
 
 def threaded(fn):
