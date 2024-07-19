@@ -9,6 +9,7 @@ from .Enforcement import _Enforcement as Enforcement
 from . import Hasher
 from ..Base.InternalPacket import InternalPacket
 from ..Base.Env import *
+from collections import deque
 
 
 def threaded(fn):
@@ -21,7 +22,7 @@ def threaded(fn):
 class Device:
     BEACON_STATUS = True
 
-    def __init__(self, device_hash, ldb, ext_ifaces=None, int_ifaces=None):
+    def __init__(self, device_hash, ldb, ext_ifaces=None, int_ifaces=None, max_last_packet_queue_size=10):
         self.ext_ifaces = ext_ifaces
         self.int_ifaces = int_ifaces
         self.device_hash = device_hash
@@ -46,14 +47,14 @@ class Device:
 
         # start sniffing on all external interfaces
         for ext_iface in self.ext_ifaces:
-            self.lastPacket[ext_iface] = b''
+            self.lastPacket[ext_iface] = deque([], maxlen=max_last_packet_queue_size)
             self.sockets.update({ext_iface: socket(PF_PACKET, SOCK_RAW)})
             self.sockets[ext_iface].bind((ext_iface, 0))
             self.sniff(prn=self.ext_iface_recv, iface=ext_iface)
 
         # start sniffing on all internal interfaces
         for int_iface in self.int_ifaces:
-            self.lastPacket[int_iface] = b''
+            self.lastPacket[int_iface] = deque([], maxlen=max_last_packet_queue_size)
             self.sockets.update({int_iface: socket(PF_PACKET, SOCK_RAW)})
             self.sockets[int_iface].bind((int_iface, 0))
             self.sniff(prn=self.int_iface_recv, iface=int_iface)
@@ -61,9 +62,9 @@ class Device:
         # start sending beacon every BEACON_INTERVAL
         self.beacon()
 
-    def _send(self, iface, data: bytes):
-        self.lastPacket[iface] = data
-        self.sockets[iface].send(data)
+    def _send(self, iface, pkt: bytes):
+        self.lastPacket[iface].append(pkt)
+        self.sockets[iface].send(pkt)
 
     def _send_wait(self, hash, data):
         current_wait_time = MIN_PKT_WAIT
@@ -117,14 +118,13 @@ class Device:
         Function triggered for every packet received on internal iface
         :param pkt: received packet
         """
-        raw = packet.raw(pkt)
-        if raw not in self.lastPacket.values():
-            pkt = InternalPacket(pkt)
+        pkt = InternalPacket(pkt)
+        if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             if pkt.hash == BEACON_HASH:
                 print("\nReceived Beacon from " + str(pkt.beacon_device_hash) +
                       ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
-                data = self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
+                data = self.device_hash + pkt.iface.encode() + pkt.beacon_device_hash + pkt.beacon_iface
                 self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data)
             else:
                 print("\nReceived internal packet with hash: " + str(pkt.hash))
