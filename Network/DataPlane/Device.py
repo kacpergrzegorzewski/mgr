@@ -124,7 +124,7 @@ class Device:
                 print("\nReceived Beacon from " + str(pkt.beacon_device_hash) +
                       ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
-                data = self.device_hash + pkt.iface + pkt.beacon_device_hash + pkt.beacon_iface
+                data = self.device_hash + pkt.iface.encode() + pkt.beacon_device_hash + pkt.beacon_iface
                 self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data)
             else:
                 print("\nReceived internal packet with hash: " + str(pkt.hash))
