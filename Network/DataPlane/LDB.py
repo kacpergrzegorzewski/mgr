@@ -23,7 +23,7 @@ class LDBSQLite:
     def get_all(self):
         return self.cursor.execute("SELECT * FROM ldb").fetchall()
 
-    def put(self, hash, outport, endtime="2099-01-01 12:00:00"):
+    def add_flow(self, hash, outport, endtime="2099-01-01 12:00:00"):
         self.cursor.execute("INSERT OR REPLACE INTO ldb(hash,outport,endtime) VALUES (?,?,?)", (memoryview(hash), outport, endtime))
         self.db.commit()
 

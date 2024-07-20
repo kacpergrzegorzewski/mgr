@@ -24,11 +24,11 @@ def ldb_test():
     ldb = LDBSQLite("/opt/mgr/ldb/" + str(int.from_bytes(device_hash, "big")) + ".db")
     print(ldb.get_outport(b'\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\t\x98\xec\xf8B~'))
     #    print(ldb.get_all())
-    ldb.put(hash, "ens16")
+    ldb.add_flow(hash, "ens16")
 
 
 def add_configurator_path(ldb, iface):
-    ldb.put(CONFIGURATOR_LINK_DISCOVERY_HASH, iface)
+    ldb.add_flow(CONFIGURATOR_LINK_DISCOVERY_HASH, iface)
     print("[INFO] Path to configurator via: " + str(ldb.get_outport(CONFIGURATOR_LINK_DISCOVERY_HASH)))
 
 

@@ -26,8 +26,9 @@ class Device:
         self.ext_ifaces = ext_ifaces
         self.int_ifaces = int_ifaces
         self.device_hash = device_hash
+        self.ldb = ldb
         # Create enforcement with LDB located in DB folder and named same as device_id but converted to int
-        self.enforcement = Enforcement(ldb=ldb)
+        self.enforcement = Enforcement(ldb=self.ldb)
 
         # Dict interface_name: last_send_packet_on_interface.
         # It turned out that scapy sniff() function also receives last send packets on interface.
@@ -84,14 +85,14 @@ class Device:
                 while current_wait_time < MAX_PKT_WAIT:
                     outport = self.enforcement.enforce(hash)
                     if outport is not None:
-                        print("Sending data to" + str(hash) + " via " + str(outport))
+                        print("[INFO] Sending data to" + str(hash) + " via " + str(outport))
                         self._send(outport, hash + data)
                         break
                     time.sleep(current_wait_time)
                     current_wait_time *= 2
         # outport in LDB
         else:
-            print("Sending data to " + str(hash) + " via " + str(outport))
+            print("[INFO] Sending data to " + str(hash) + " via " + str(outport))
             self._send(outport, hash + data)
 
     @threaded
@@ -121,13 +122,16 @@ class Device:
         pkt = InternalPacket(pkt)
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             if pkt.hash == BEACON_HASH:
-                print("\nReceived Beacon from " + str(pkt.beacon_device_hash) +
+                print("[INFO] Received Beacon from " + str(pkt.beacon_device_hash) +
                       ". Local interface: " + str(pkt.iface) +
                       ". Remote interface: " + str(pkt.beacon_iface))
                 data = self.device_hash + pkt.iface.encode() + pkt.beacon_device_hash + pkt.beacon_iface
                 self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data)
+            elif pkt.hash == self.device_hash:
+                print("[INFO] Received new LDB entry.")
+                self.ldb.add_flow(*pkt.extract_ldb_configuration())
             else:
-                print("\nReceived internal packet with hash: " + str(pkt.hash))
+                print("[INFO] Received internal packet with hash: " + str(pkt.hash))
                 self._send_wait(pkt.hash, pkt.data)
 
     @threaded
@@ -145,7 +149,7 @@ class Device:
             while self.BEACON_STATUS:
                 # send beacon on all internal interfaces
                 for iface in self.int_ifaces:
-                    print("\nsending beacon on interface " + str(iface))
+                    print("[INFO] sending beacon on interface " + str(iface))
                     data = BEACON_HASH + self.device_hash + iface.encode()
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon

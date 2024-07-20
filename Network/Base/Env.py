@@ -15,3 +15,9 @@ MAX_PKT_WAIT = 2
 
 # Length of all interfaces names in network (e.g. "ens16" = 5)
 IFACE_NAME_LENGTH = 5
+
+# How to send data in network? (big endian, little endian)
+NETWORK_BYTEORDER = 'big'
+
+# Length of epoch time variable in bytes (1 byte = 8 bits). Epoch time variable is used in LDB flow timeout.
+EPOCH_TIME_LENGTH = 8
