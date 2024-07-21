@@ -20,14 +20,14 @@ class TDB:
         self.tdb = nx.DiGraph()
         self.print_current_state()
 
-    def add_node(self, node):
+    def update_node(self, node):
         if node not in self.tdb.nodes:
             self.tdb.add_node(node)
             print("[INFO] Added node " + str(node) + " to TDB.")
         else:
             print("[INFO] Node " + str(node) + " exists.")
 
-    def add_edge(self, start, end, src_iface, dst_iface):
+    def update_edge(self, start, end, src_iface, dst_iface):
         if start and end in self.tdb.nodes:
             self.tdb.add_edge(start, end, src_iface=src_iface, dst_iface=dst_iface)
         else:

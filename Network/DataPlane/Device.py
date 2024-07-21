@@ -122,14 +122,16 @@ class Device:
         pkt = InternalPacket(pkt)
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             if pkt.hash == BEACON_HASH:
-                print("[INFO] Received Beacon from " + str(pkt.beacon_device_hash) +
+                beacon_hash, beacon_iface = pkt.extract_beacon_data()
+                print("[INFO] Received Beacon from " + str(beacon_hash) +
                       ". Local interface: " + str(pkt.iface) +
-                      ". Remote interface: " + str(pkt.beacon_iface))
-                data = self.device_hash + pkt.iface.encode() + pkt.beacon_device_hash + pkt.beacon_iface
+                      ". Remote interface: " + str(beacon_iface))
+                # send link discovery to configurator
+                data = self.device_hash + pkt.iface.encode() + beacon_hash + beacon_iface.encode()
                 self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data)
             elif pkt.hash == self.device_hash:
                 print("[INFO] Received new LDB entry.")
-                self.ldb.add_flow(*pkt.extract_ldb_configuration())
+                self.ldb.add_flow(*pkt.extract_ldb_add_entry_data())
             else:
                 print("[INFO] Received internal packet with hash: " + str(pkt.hash))
                 self._send_wait(pkt.hash, pkt.data)

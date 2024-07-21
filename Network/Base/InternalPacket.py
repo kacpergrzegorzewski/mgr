@@ -10,25 +10,37 @@ class InternalPacket:
         self.raw_pkt = raw(pkt)
         self.hash = self.raw_pkt[0:Hasher.LENGTH]
         self.data = self.raw_pkt[Hasher.LENGTH:]
-        if self.hash == BEACON_HASH:
-            self.beacon_device_hash = self.raw_pkt[Hasher.LENGTH:2 * Hasher.LENGTH]
-            self.beacon_iface = self.raw_pkt[2*Hasher.LENGTH:2*Hasher.LENGTH+IFACE_NAME_LENGTH]
-        elif self.hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
-            #  data schema: |#########################|##########|####################|##########|
-            #                         src_hash          src_iface       dst_hash        dst_iface
-            self.link_discovery_src_hash = self.data[0:Hasher.LENGTH]
-            self.link_discovery_src_iface = self.data[Hasher.LENGTH:Hasher.LENGTH+IFACE_NAME_LENGTH].decode()
-            self.link_discovery_dst_hash = self.data[Hasher.LENGTH+IFACE_NAME_LENGTH:2*Hasher.LENGTH+IFACE_NAME_LENGTH]
-            self.link_discovery_dst_iface = self.data[2*Hasher.LENGTH+IFACE_NAME_LENGTH:2*Hasher.LENGTH+2*IFACE_NAME_LENGTH].decode()
 
-    def extract_ldb_configuration(self):
+    def extract_beacon_data(self):
+        #  data schema: |#########################|###########|
+        #                         src_hash          src_iface
+        pointer = 0
+        beacon_device_hash = self.data[0:pointer + Hasher.LENGTH].decode()
+        pointer += Hasher.LENGTH
+        beacon_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH]
+        return [beacon_device_hash, beacon_iface]
+
+    def extract_configurator_link_discovery_data(self):
+        #  data schema: |#########################|###########|####################|###########|
+        #                         src_hash          src_iface        dst_hash        dst_iface
+        pointer = 0
+        link_discovery_src_hash = self.data[pointer:pointer+Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        link_discovery_src_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH].decode()
+        pointer += IFACE_NAME_LENGTH
+        link_discovery_dst_hash = self.data[pointer:pointer + Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        link_discovery_dst_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH].decode()
+        return [link_discovery_src_hash, link_discovery_src_iface, link_discovery_dst_hash, link_discovery_dst_iface]
+
+    def extract_ldb_add_entry_data(self):
         '''
         Function used to extract data from packets which contains ldb reconfiguration task
         :return: array contains hash of flow to add (bytes), name of outport (str)
         and time after which the flow should be removed from LDB (int)
         '''
-        #  data schema: |#########################|##########|####################|
-        #                        flow hash          outport          timeout
+        #  data schema: |#########################|#########|####################|
+        #                      hash of flow         outport         timeout
         # outport length is IFACE_NAME_LENGTH
         # timeout is in epoch format (variable length is EPOCH_TIME_LENGTH)
         pointer = 0

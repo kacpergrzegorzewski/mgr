@@ -38,16 +38,18 @@ class Configurator:
         sniff(prn=prn, iface=iface)
 
     def recv(self, pkt):
-        internal_packet = InternalPacket(pkt)
-        if internal_packet.hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
-            print("Received packet: " + str(internal_packet.raw_pkt))
-            self.tdb.add_node(internal_packet.link_discovery_src_hash)
-            self.tdb.add_node(internal_packet.link_discovery_dst_hash)
-            self.tdb.add_edge(
-                start=internal_packet.link_discovery_src_hash,
-                end=internal_packet.link_discovery_dst_hash,
-                src_iface=internal_packet.link_discovery_src_iface,
-                dst_iface=internal_packet.link_discovery_dst_iface
+        pkt = InternalPacket(pkt)
+        if pkt.hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
+            src_hash, src_iface, dst_hash, dst_iface = pkt.extract_configurator_link_discovery_data()
+            print("[INFO] Received link discovery packet from " + str(src_hash) + " (" + str(src_iface) + ") to " +
+                  str(dst_hash) + " (" + str(dst_iface) + ")")
+            self.tdb.update_node(src_hash)
+            self.tdb.update_node(dst_hash)
+            self.tdb.update_edge(
+                start=src_hash,
+                end=dst_hash,
+                src_iface=src_iface,
+                dst_iface=dst_iface
             )
 
 
