@@ -87,13 +87,15 @@ class Device:
                     if outport is not None:
                         print("[INFO] Sending data to" + str(hash) + " via " + str(outport))
                         self._send(outport, hash + data)
-                        break
+                        return
                     time.sleep(current_wait_time)
                     current_wait_time *= 2
+                print("[WARNING] Flow " + str(hash) + " dropped due to missing entry in LDB.")
         # outport in LDB
         else:
             print("[INFO] Sending data to " + str(hash) + " via " + str(outport))
             self._send(outport, hash + data)
+            return
 
     @threaded
     def sniff(self, prn, iface):
