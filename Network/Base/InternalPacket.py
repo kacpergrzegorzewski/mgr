@@ -20,7 +20,7 @@ class InternalPacket:
         beacon_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH]
         return [beacon_device_hash, beacon_iface]
 
-    def extract_configurator_link_discovery_data(self):
+    def extract_configurator_add_link_data(self):
         #  data schema: |#########################|###########|####################|###########|
         #                         src_hash          src_iface        dst_hash        dst_iface
         pointer = 0
@@ -51,3 +51,42 @@ class InternalPacket:
         timeout = int.from_bytes(self.data[pointer:pointer+EPOCH_TIME_LENGTH], byteorder=NETWORK_BYTEORDER)
         return [flow_hash, outport, timeout]
 
+    def extract_policy_engine_new_flow_data(self):
+        #  data schema: |#########################|#########################|#########|#############################...
+        #                      hash of flow             src device hash      src iface    copy of original packet
+        pointer = 0
+        hash_of_flow = self.data[pointer:pointer+Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        src_device = self.data[pointer:pointer+Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        src_iface = self.data[pointer:pointer+IFACE_NAME_LENGTH].decode()
+        pointer += IFACE_NAME_LENGTH
+        src_pkt = self.data[pointer:]
+
+        return [hash_of_flow, src_device, src_iface, src_pkt]
+
+    def extract_configurator_update_agent_data(self):
+        #  data schema: |#########################|#########################|#########|
+        #                        agent hash          device (edge) hash        iface
+        pointer = 0
+        agent_hash = self.data[pointer:pointer + Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        device_hash = self.data[pointer:pointer + Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        device_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH].decode()
+
+        return [agent_hash, device_hash, device_iface]
+
+    def extract_configurator_add_flow_data(self):
+        #  data schema: |#########################|#########################|#########|####################|
+        #                        src device                dst device        dst iface        timeout
+        pointer = 0
+        src_device = self.data[pointer:pointer + Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        dst_device = self.data[pointer:pointer + Hasher.LENGTH]
+        pointer += Hasher.LENGTH
+        dst_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH].decode()
+        pointer += IFACE_NAME_LENGTH
+        timeout = self.data[pointer:pointer+EPOCH_TIME_LENGTH]
+
+        return [src_device, dst_device, dst_iface, timeout]

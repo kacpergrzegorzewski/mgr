@@ -2,8 +2,15 @@
 BEACON_HASH = b'\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\t\x98\xec\xf8B~'
 # hash("policy-engine")
 POLICY_ENGINE_HASH = b'\xcb\xf7\xdc-\x8b\xaf\xa0t\x85\x8a?\x80_\x03q\xee'
-# hash("configurator")
-CONFIGURATOR_LINK_DISCOVERY_HASH = b'd\xa7\x88\xf2\xb9\xa2\x1eG\xec\xa4s\xaeye0Q'
+# hash("policy-engine-new-flow")
+POLICY_ENGINE_NEW_FLOW_HASH = b'\x1eB|\xe20\xbf\xe0\xed\xdb\xcd\xad\x07s\xc8~\r'
+# hash("configurator-update-agent")
+CONFIGURATOR_UPDATE_AGENT_HASH = b'\xbdA\x97xO\x1bcq!\x80_\r\x94IMn'
+# hash("configurator-add-link")
+CONFIGURATOR_ADD_LINK_HASH = b'v\x8d\xfb\xc3\x8bf\xea\x86\xc0\xaf\x1c!V\x0e\xd9\xe9'
+# hash("configurator-add-flow")
+CONFIGURATOR_ADD_FLOW_HASH = b'\x80\xcf\x1d\x04\xa7dL!\x9d\x1d\xd6\xa4N\x05\x95\xd2'
+
 
 # Beacon interval in seconds
 BEACON_INTERVAL = 2

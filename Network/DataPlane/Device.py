@@ -74,10 +74,12 @@ class Device:
         if outport is None:
             # find policy engine path
             policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_HASH)
-            if hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
+            if hash == CONFIGURATOR_ADD_LINK_HASH:
                 print("[ERROR] Configurator outport not found in LDB!")
+                return
             if policy_engine_outport is None:
                 print("[ERROR] Policy engine outport not found in LDB!")
+                return
             else:
                 # send request to policy engine
                 self._send(policy_engine_outport, POLICY_ENGINE_HASH + hash + data)
@@ -130,7 +132,7 @@ class Device:
                       ". Remote interface: " + str(beacon_iface))
                 # send link discovery to configurator
                 data = self.device_hash + pkt.iface.encode() + beacon_hash + beacon_iface.encode()
-                self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data)
+                self._send_wait(CONFIGURATOR_ADD_LINK_HASH, data)
             elif pkt.hash == self.device_hash:
                 print("[INFO] Received new LDB entry.")
                 self.ldb.add_flow(*pkt.extract_ldb_add_entry_data())

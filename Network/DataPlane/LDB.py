@@ -3,7 +3,7 @@ import sqlite3
 
 class LDBSQLite:
     def __init__(self, filename):
-        print("Initializing LDB in " + filename)
+        print("[INFO] Initializing LDB in " + filename)
         self._init_db(filename)
 
     def _init_db(self, filename):
@@ -23,7 +23,7 @@ class LDBSQLite:
     def get_all(self):
         return self.cursor.execute("SELECT * FROM ldb").fetchall()
 
-    def add_flow(self, hash, outport, endtime="2099-01-01 12:00:00"):
+    def add_flow(self, hash, outport, endtime="4070908800"):
         self.cursor.execute("INSERT OR REPLACE INTO ldb(hash,outport,endtime) VALUES (?,?,?)", (memoryview(hash), outport, endtime))
         self.db.commit()
 

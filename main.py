@@ -28,8 +28,8 @@ def ldb_test():
 
 
 def add_configurator_path(ldb, iface):
-    ldb.add_flow(CONFIGURATOR_LINK_DISCOVERY_HASH, iface)
-    print("[INFO] Path to configurator via: " + str(ldb.get_outport(CONFIGURATOR_LINK_DISCOVERY_HASH)))
+    ldb.add_flow(CONFIGURATOR_ADD_LINK_HASH, iface)
+    print("[INFO] Path to configurator via: " + str(ldb.get_outport(CONFIGURATOR_ADD_LINK_HASH)))
 
 
 if __name__ == '__main__':

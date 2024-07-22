@@ -39,8 +39,8 @@ class Configurator:
 
     def recv(self, pkt):
         pkt = InternalPacket(pkt)
-        if pkt.hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
-            src_hash, src_iface, dst_hash, dst_iface = pkt.extract_configurator_link_discovery_data()
+        if pkt.hash == CONFIGURATOR_ADD_LINK_HASH:
+            src_hash, src_iface, dst_hash, dst_iface = pkt.extract_configurator_add_link_data()
             print("[INFO] Received link discovery packet from " + str(src_hash) + " (" + str(src_iface) + ") to " +
                   str(dst_hash) + " (" + str(dst_iface) + ")")
             self.tdb.update_node(src_hash)
@@ -51,5 +51,10 @@ class Configurator:
                 src_iface=src_iface,
                 dst_iface=dst_iface
             )
-
+        elif pkt.hash == CONFIGURATOR_ADD_FLOW_HASH:
+            src_device, dst_device, dst_iface, timeout = pkt.extract_configurator_add_flow_data()
+            # TODO
+        elif pkt.hash == CONFIGURATOR_UPDATE_AGENT_HASH:
+            agent_hash, device_hash, device_iface = pkt.extract_configurator_update_agent_data()
+            # TODO
 
