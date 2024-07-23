@@ -15,9 +15,9 @@ class InternalPacket:
         #  data schema: |#########################|###########|
         #                         src_hash          src_iface
         pointer = 0
-        beacon_device_hash = self.data[0:pointer + Hasher.LENGTH].decode()
+        beacon_device_hash = self.data[0:pointer + Hasher.LENGTH]
         pointer += Hasher.LENGTH
-        beacon_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH]
+        beacon_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH].decode()
         return [beacon_device_hash, beacon_iface]
 
     def extract_configurator_add_link_data(self):
