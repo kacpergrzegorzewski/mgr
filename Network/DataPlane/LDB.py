@@ -61,5 +61,6 @@ class LDBSQLite:
         while self.DELETE_OLD_FLOWS:
             lock.acquire(True)
             self.cursor.execute("DELETE FROM LDB WHERE endtime<?", (str(int(time.time())),))
+            self.db.commit()
             lock.release()
             time.sleep(self.DELETE_OLD_FLOWS_INTERVAL)
