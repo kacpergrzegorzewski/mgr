@@ -8,7 +8,6 @@ from ..Base.Env import *
 def threaded(fn):
     def wrapper(*args, **kwargs):
         threading.Thread(target=fn, args=args, kwargs=kwargs).start()
-
     return wrapper
 
 
@@ -27,11 +26,20 @@ class TDB:
         else:
             print("[INFO] Node " + str(node) + " exists.")
 
-    def update_edge(self, start, end, src_iface, dst_iface):
+    def get_link_source_iface(self, node_a, node_b):
+        return self.tdb.get_edge_data(node_a, node_b)["src_iface"]
+
+    def get_link_destination_iface(self, node_a, node_b):
+        return self.tdb.get_edge_data(node_a, node_b)["dst_iface"]
+
+    def update_link(self, start, end, src_iface, dst_iface):
         if start and end in self.tdb.nodes:
             self.tdb.add_edge(start, end, src_iface=src_iface, dst_iface=dst_iface)
         else:
             print("[WARNING] Node does not exist. Link " + str(start) + " -> " + str(end) + " not created in TDB.")
+
+    def get_path(self, source=None, destination=None):
+        return nx.shortest_path(self.tdb, source, destination)
 
     @threaded
     def print_current_state(self):

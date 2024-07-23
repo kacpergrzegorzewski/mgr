@@ -19,12 +19,15 @@ def threaded(fn):
 class Configurator:
     TDB_PRINT = True
     TDB_PRINT_INTERVAL = 10
+    CREATE_INTERNAL_PATHS = True
+    CREATE_INTERNAL_PATHS_INTERVAL = 7
 
     def __init__(self, iface):
         print("[INFO] Initializing Configurator")
         self.iface = iface
         self.tdb = TDB()
         self.sniff(self.recv, self.iface)
+        self.create_internal_paths()
 
     @threaded
     def sniff(self, prn, iface):
@@ -45,7 +48,7 @@ class Configurator:
                   str(dst_hash) + " (" + str(dst_iface) + ")")
             self.tdb.update_node(src_hash)
             self.tdb.update_node(dst_hash)
-            self.tdb.update_edge(
+            self.tdb.update_link(
                 start=src_hash,
                 end=dst_hash,
                 src_iface=src_iface,
@@ -58,3 +61,17 @@ class Configurator:
             agent_hash, device_hash, device_iface = pkt.extract_configurator_update_agent_data()
             # TODO
 
+    @threaded
+    def create_internal_paths(self):
+        while self.CREATE_INTERNAL_PATHS:
+            paths = self.tdb.get_path()
+            for source, destinations in paths.items():
+                for destination, path in destinations.items():
+                    print("********************")
+                    print("src: " + str(source))
+                    print("dst: " + str(destination))
+                    for i in range(0, len(path)-1):
+                        iface = self.tdb.get_link_source_iface(path[i], path[i+1])
+                        print(str(i+1) + ". from: " + str(path[i]) + " to: " + str(path[i+1]) + " via: " + str(iface))
+                    print("********************")
+            time.sleep(self.CREATE_INTERNAL_PATHS_INTERVAL)
