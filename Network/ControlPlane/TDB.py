@@ -23,8 +23,8 @@ class TDB:
         if node not in self.tdb.nodes:
             self.tdb.add_node(node)
             print("[INFO] Added node " + str(node) + " to TDB.")
-        else:
-            print("[INFO] Node " + str(node) + " exists.")
+        # else:
+        #     print("[INFO] Node " + str(node) + " exists.")
 
     def get_link_source_iface(self, node_a, node_b):
         return self.tdb.get_edge_data(node_a, node_b)["src_iface"]
