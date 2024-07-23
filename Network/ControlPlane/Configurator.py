@@ -1,5 +1,6 @@
 import threading
 import time
+from socket import socket, PF_PACKET, SOCK_RAW
 
 from scapy.sendrecv import sniff
 import networkx as nx
@@ -21,6 +22,7 @@ class Configurator:
     TDB_PRINT_INTERVAL = 10
     CREATE_INTERNAL_PATHS = True
     CREATE_INTERNAL_PATHS_INTERVAL = 7
+    INTERNAL_PATHS_LIFETIME = 2*CREATE_INTERNAL_PATHS_INTERVAL+1
 
     def __init__(self, iface):
         print("[INFO] Initializing Configurator")
@@ -28,6 +30,11 @@ class Configurator:
         self.tdb = TDB()
         self.sniff(self.recv, self.iface)
         self.create_internal_paths()
+        self.socket = socket(PF_PACKET, SOCK_RAW)
+        self.socket.bind((iface, 0))
+
+    def send(self, hash, data):
+        self.socket.send(hash + data)
 
     @threaded
     def sniff(self, prn, iface):
@@ -68,9 +75,11 @@ class Configurator:
             for source, destinations in paths.items():
                 for destination, path in destinations.items():
                     if len(path) > 1:  # not path to self
-                        via = self.tdb.get_link_source_iface(path[0], path[1])
-                        print("********************")
-                        print("src: " + str(source))
-                        print("dst: " + str(destination))
-                        print("via: " + str(via))
+                        via = self.tdb.get_link_source_iface(path[0], path[1]).encode()
+                        endtime = ((int(time.time()) + self.INTERNAL_PATHS_LIFETIME).
+                                   to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
+                        hash = source
+                        data = destinations + via + endtime
+                        self.send(hash, data)
+                        print("[INFO] sent to " + str(source) + " node " + str(destination) + " via " + str(via))
             time.sleep(self.CREATE_INTERNAL_PATHS_INTERVAL)
