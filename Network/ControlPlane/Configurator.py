@@ -67,11 +67,10 @@ class Configurator:
             paths = self.tdb.get_path()
             for source, destinations in paths.items():
                 for destination, path in destinations.items():
-                    print("********************")
-                    print("src: " + str(source))
-                    print("dst: " + str(destination))
-                    for i in range(0, len(path)-1):
-                        iface = self.tdb.get_link_source_iface(path[i], path[i+1])
-                        print(str(i+1) + ". from: " + str(path[i]) + " to: " + str(path[i+1]) + " via: " + str(iface))
-                    print("********************")
+                    if len(path) > 1:  # not path to self
+                        via = self.tdb.get_link_source_iface(path[0], path[1])
+                        print("********************")
+                        print("src: " + str(source))
+                        print("dst: " + str(destination))
+                        print("via: " + str(via))
             time.sleep(self.CREATE_INTERNAL_PATHS_INTERVAL)
