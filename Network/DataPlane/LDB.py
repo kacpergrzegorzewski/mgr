@@ -11,8 +11,6 @@ def threaded(fn):
     return wrapper
 
 
-lock = Lock()
-
 
 class LDBSQLite:
     DELETE_OLD_FLOWS = True
@@ -21,46 +19,51 @@ class LDBSQLite:
     def __init__(self, filename):
         print("[INFO] Initializing LDB in " + filename)
         self._init_db(filename)
+        self.db_lock = Lock()
 
     def _init_db(self, filename):
         self.db = sqlite3.connect(filename, check_same_thread=False)
         self.cursor = self.db.cursor()
-        lock.acquire(True)
+        self.db_lock.acquire(True)
         result = self.cursor.execute("PRAGMA table_info(ldb)")
-        lock.release()
+        self.db_lock.release()
         if result.fetchone() is None:
-            lock.acquire(True)
+            self.db_lock.acquire(True)
             self.cursor.execute("CREATE TABLE ldb(hash BLOB PRIMARY KEY ON CONFLICT REPLACE, outport, endtime)")
-            lock.release()
+            self.db_lock.release()
         self._delete_old_flows()
 
     def get_outport(self, hash):
-        lock.acquire(True)
+        self.db_lock.acquire(True)
         response = self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()
-        lock.release()
+        self.db_lock.release()
         if response is None:
             return None
         else:
             return response[0]
 
     def get_all(self):
-        lock.acquire(True)
+        self.db_lock.acquire(True)
         response = self.cursor.execute("SELECT * FROM ldb").fetchall()
-        lock.release()
+        self.db_lock.release()
         return response
 
-    def add_flow(self, hash, outport, endtime="4070908800"):
-        lock.acquire(True)
+    @threaded
+    def add_flow(self, hash, outport, endtime="4070908800"):  # 01.01.2099
+        self.db_lock.acquire(True)
         self.cursor.execute("INSERT OR REPLACE INTO ldb(hash,outport,endtime) VALUES (?,?,?)",
                             (memoryview(hash), outport, endtime))
         self.db.commit()
-        lock.release()
+        self.db_lock.release()
 
     @threaded
     def _delete_old_flows(self):
         while self.DELETE_OLD_FLOWS:
-            lock.acquire(True)
-            self.cursor.execute("DELETE FROM LDB WHERE endtime<?", (str(int(time.time())),))
+            self.db_lock.acquire(True)
+            current_time = str(int(time.time()))
+            response = self.cursor.execute("SELECT * FROM LDB WHERE endtime<?", (current_time,))
             self.db.commit()
-            lock.release()
+            self.db_lock.release()
+            print("current time: " + current_time)
+            print(response.fetchall())
             time.sleep(self.DELETE_OLD_FLOWS_INTERVAL)
