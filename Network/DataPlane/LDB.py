@@ -59,12 +59,10 @@ class LDBSQLite:
     @threaded
     def _delete_old_flows(self):
         while self.DELETE_OLD_FLOWS:
-            self.db_lock.acquire(True)
             current_time = str(int(time.time()))
-            response = self.cursor.execute("SELECT * FROM LDB WHERE endtime<?", (current_time,))
-            fetchall = response.fetchall()
+            query = "DELETE FROM LDB WHERE endtime<" + current_time
+            self.db_lock.acquire(True)
+            self.cursor.execute(query)
             self.db.commit()
             self.db_lock.release()
-            print("current time: " + current_time)
-            print(fetchall)
             time.sleep(self.DELETE_OLD_FLOWS_INTERVAL)
