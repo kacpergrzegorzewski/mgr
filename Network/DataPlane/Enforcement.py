@@ -15,5 +15,5 @@ class _Enforcement:
 
     def enforce(self, hash):
         outport = self.ldb.get_outport(hash)
-        print("enforcing " + str(hash))
+        print("[INFO] enforcing " + str(hash))
         return outport
