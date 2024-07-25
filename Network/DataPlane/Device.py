@@ -4,6 +4,7 @@ from socket import PF_PACKET, SOCK_RAW, socket, gethostname
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
 from scapy import packet
+from scapy.layers import inet
 from time import sleep
 from .Enforcement import _Enforcement as Enforcement
 from . import Hasher
@@ -114,9 +115,9 @@ class Device:
         Function triggered for every packet received on external iface
         :param pkt: received packet
         """
-        raw = packet.raw(pkt)
-        print("\next packet:")
-        print(pkt)
+        raw = inet.raw(pkt)
+        print(type(raw))
+        print(raw)
 
     def int_iface_recv(self, pkt):
         """
