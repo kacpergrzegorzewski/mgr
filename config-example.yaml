@@ -10,3 +10,5 @@ spec:
     policyEngineVia: "ens16"
   configurator:
     iface: ""
+  policyEngine:
+    iface: ""

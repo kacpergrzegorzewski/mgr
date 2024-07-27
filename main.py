@@ -3,6 +3,7 @@ from socket import gethostname
 from Network.DataPlane.Device import Device
 from Network.DataPlane.LDB import LDBSQLite
 from Network.ControlPlane.Configurator import Configurator
+from Network.ControlPlane.PolicyEngine import PolicyEngine
 from Network.Base.Env import *
 import yaml
 
@@ -17,6 +18,11 @@ def start_device(device_name, ldb_path, configurator_via, policy_engine_via, int
 
 def start_configurator(iface):
     configurator = Configurator(iface=iface)
+
+
+def start_policy_engine(iface):
+    policy_engine = PolicyEngine(iface=iface)
+
 
 def ldb_test():
     hash = b'\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\t\x98\xec\xf8B~'
@@ -51,5 +57,7 @@ if __name__ == '__main__':
                      config["spec"]["device"]["extIfaces"])
     elif config["type"] == "configurator":
         start_configurator(config["spec"]["configurator"]["iface"])
+    elif config["type"] == "policyEngine":
+        start_configurator(config["spec"]["policyEngine"]["iface"])
     # start_device()
 #    add_configurator_path("ens27")
