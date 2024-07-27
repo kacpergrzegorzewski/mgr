@@ -1,6 +1,8 @@
 import threading
 import time
 from socket import PF_PACKET, SOCK_RAW, socket, gethostname
+
+import scapy.packet
 from scapy.compat import bytes_hex
 from scapy.sendrecv import sniff
 from scapy import packet
@@ -9,6 +11,7 @@ from time import sleep
 from .Enforcement import _Enforcement as Enforcement
 from . import Hasher
 from ..Base.InternalPacket import InternalPacket
+from ..Base.ExternalPacket import ExternalPacket
 from ..Base.Env import *
 from collections import deque
 
@@ -108,16 +111,17 @@ class Device:
         :param iface: name of interface
         :return: None
         """
-        sniff(prn=prn, iface=iface)
+        sniff(prn=prn, iface=iface, store=0)
 
     def ext_iface_recv(self, pkt):
         """
         Function triggered for every packet received on external iface
         :param pkt: received packet
         """
-        raw = inet.raw(pkt)
-        print(type(raw))
-        print(raw)
+        pkt = ExternalPacket(pkt)
+        # check if packet is not in last sent packets (sniff also captures sent packets)
+        if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
+            print("[WARNING] Received external packet with values: " + str(pkt.to_hash))
 
     def int_iface_recv(self, pkt):
         """
@@ -125,6 +129,7 @@ class Device:
         :param pkt: received packet
         """
         pkt = InternalPacket(pkt)
+        # check if packet is not in last sent packets (sniff also captures sent packets)
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             if pkt.hash == BEACON_HASH:
                 beacon_hash, beacon_iface = pkt.extract_beacon_data()
