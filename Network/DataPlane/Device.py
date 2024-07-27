@@ -77,7 +77,7 @@ class Device:
         # outport not in LDB
         if outport is None:
             # find policy engine path
-            policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_HASH)
+            policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_NEW_FLOW_HASH)
             if hash == CONFIGURATOR_ADD_LINK_HASH:
                 print("[ERROR] Configurator outport not found in LDB!")
                 return
@@ -86,7 +86,7 @@ class Device:
                 return
             else:
                 # send request to policy engine
-                self._send(policy_engine_outport, POLICY_ENGINE_HASH + hash + data)
+                self._send(policy_engine_outport, POLICY_ENGINE_NEW_FLOW_HASH + hash + data)
                 # wait for LDB reconfiguration
                 while current_wait_time < MAX_PKT_WAIT:
                     outport = self.enforcement.enforce(hash)

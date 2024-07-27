@@ -2,6 +2,8 @@ from scapy.layers.l2 import Ether
 from scapy.packet import raw
 import scapy.layers.all
 
+from ..Base.Env import *
+
 class ExternalPacket:
     def __init__(self, pkt: Ether):
         self.pkt = pkt
@@ -30,8 +32,8 @@ class ExternalPacket:
             self.src_port = self.pkt["UDP"].sport
             self.dst_port = self.pkt["UDP"].dport
         else:
-            self.src_port = ""
-            self.dst_port = ""
+            self.src_port = None
+            self.dst_port = None
 
         self.to_hash = b''
         for layer_name in self.layers:
@@ -40,7 +42,9 @@ class ExternalPacket:
         self.to_hash += self.mac_dst.encode()
         self.to_hash += self.ip_src.encode()
         self.to_hash += self.ip_dst.encode()
-        self.to_hash += self.dst_port.encode()
+        if self.dst_port is not None:
+            # port number is 16 bits = 2 bytes
+            self.to_hash += self.dst_port.to_bytes(length=2, byteorder=NETWORK_BYTEORDER)
 
     def get_layers(self):
         counter = 0
