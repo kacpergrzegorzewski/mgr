@@ -26,6 +26,9 @@ class ExternalPacket:
         if "TCP" in self.layers:
             self.src_port = self.pkt["TCP"].sport
             self.dst_port = self.pkt["TCP"].dport
+        elif "UDP" in self.layers:
+            self.src_port = self.pkt["UDP"].sport
+            self.dst_port = self.pkt["UDP"].dport
         else:
             self.src_port = ""
             self.dst_port = ""
