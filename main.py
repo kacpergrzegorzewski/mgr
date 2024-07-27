@@ -57,7 +57,7 @@ if __name__ == '__main__':
                      config["spec"]["device"]["extIfaces"])
     elif config["type"] == "configurator":
         start_configurator(config["spec"]["configurator"]["iface"])
-    elif config["type"] == "policyEngine":
+    elif config["type"] == "policy-engine":
         start_configurator(config["spec"]["policyEngine"]["iface"])
     # start_device()
 #    add_configurator_path("ens27")
