@@ -7,7 +7,6 @@ class ExternalPacket:
         self.pkt = pkt
         self.iface = pkt.sniffed_on
         self.raw_pkt = raw(pkt)
-        self.json = self.pkt.json()
         self.layers = self.get_layers()
 
         if 'Ethernet' in self.layers:
