@@ -4,6 +4,7 @@ from scapy.sendrecv import sniff
 
 from ..Base.InternalPacket import InternalPacket
 from ..Base.Env import *
+from ..Base.ExternalPacket import ExternalPacket
 
 
 
@@ -36,5 +37,7 @@ class PolicyEngine:
         pkt = InternalPacket(pkt)
         if pkt.hash == POLICY_ENGINE_NEW_FLOW_HASH:
             hash_of_flow, src_device, src_iface, src_pkt = pkt.extract_policy_engine_new_flow_data()
+            src_pkt = ExternalPacket(src_pkt)
             print("[INFO] Received new flow request")
+            print("MAC src: " + str(src_pkt.mac_src) + " MAC dst: " + str(src_pkt.mac_dst))
             # TODO

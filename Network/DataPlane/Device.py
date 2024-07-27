@@ -71,7 +71,7 @@ class Device:
         self.lastPacket[iface].append(pkt)
         self.sockets[iface].send(pkt)
 
-    def _send_wait(self, hash, data):
+    def _send_wait(self, hash, data, src_iface=""):
         current_wait_time = MIN_PKT_WAIT
         outport = self.enforcement.enforce(hash)
         # outport not in LDB
@@ -86,7 +86,8 @@ class Device:
                 return
             else:
                 # send request to policy engine
-                self._send(policy_engine_outport, POLICY_ENGINE_NEW_FLOW_HASH + hash + data)
+                self._send(policy_engine_outport,
+                           POLICY_ENGINE_NEW_FLOW_HASH + hash + self.device_hash + src_iface.encode() + data)
                 # wait for LDB reconfiguration
                 while current_wait_time < MAX_PKT_WAIT:
                     outport = self.enforcement.enforce(hash)
@@ -122,6 +123,9 @@ class Device:
         # check if packet is not in last sent packets (sniff also captures sent packets)
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             print("[WARNING] Received external packet with values: " + str(pkt.to_hash))
+            flow_hash = Hasher.hash(pkt.to_hash)
+            self._send_wait(flow_hash, pkt.raw_pkt, src_iface=pkt.iface)
+
 
     def int_iface_recv(self, pkt):
         """
@@ -138,13 +142,13 @@ class Device:
                       ". Remote interface: " + str(beacon_iface))
                 # send link discovery to configurator
                 data = self.device_hash + pkt.iface.encode() + beacon_hash + beacon_iface.encode()
-                self._send_wait(CONFIGURATOR_ADD_LINK_HASH, data)
+                self._send_wait(CONFIGURATOR_ADD_LINK_HASH, data, src_iface=pkt.iface)
             elif pkt.hash == self.device_hash:
                 print("[INFO] Received new LDB entry.")
                 self.ldb.add_flow(*pkt.extract_ldb_add_entry_data())
             else:
                 print("[INFO] Received internal packet with hash: " + str(pkt.hash))
-                self._send_wait(pkt.hash, pkt.data)
+                self._send_wait(pkt.hash, pkt.data, src_iface=pkt.iface)
 
     @threaded
     def beacon(self):

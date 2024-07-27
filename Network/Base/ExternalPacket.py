@@ -4,8 +4,11 @@ import scapy.layers.all
 
 from ..Base.Env import *
 
+
 class ExternalPacket:
-    def __init__(self, pkt: Ether):
+    def __init__(self, pkt):
+        if type(pkt) == bytes:
+            pkt = Ether(pkt)
         self.pkt = pkt
         self.iface = pkt.sniffed_on
         self.raw_pkt = raw(pkt)

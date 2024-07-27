@@ -8,7 +8,7 @@ import yaml
 
 
 def start_device(device_name, ldb_path, configurator_via, policy_engine_via, int_ifaces, ext_ifaces):
-    device_hash = Hasher.hasher(device_name.encode())
+    device_hash = Hasher.hash(device_name.encode())
     print("[INFO] Starting device " + str(device_hash))
     ldb = LDBSQLite(ldb_path)
     add_configurator_path(ldb, configurator_via)
@@ -20,7 +20,7 @@ def start_configurator(iface):
 
 def ldb_test():
     hash = b'\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\t\x98\xec\xf8B~'
-    device_hash = Hasher.hasher(gethostname().encode())
+    device_hash = Hasher.hash(gethostname().encode())
     ldb = LDBSQLite("/opt/mgr/ldb/" + str(int.from_bytes(device_hash, "big")) + ".db")
     print(ldb.get_outport(b'\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\t\x98\xec\xf8B~'))
     #    print(ldb.get_all())

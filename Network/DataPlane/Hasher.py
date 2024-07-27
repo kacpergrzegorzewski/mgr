@@ -1,12 +1,8 @@
 from hashlib import md5
 
 
-def hash_pkt(pkt):
-    print("hashing")
-
-
-def hasher(data):
+def hash(data):
     return md5(data).digest()
 
 
-LENGTH = len(hasher("".encode()))
+LENGTH = len(hash("".encode()))
