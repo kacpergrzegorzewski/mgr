@@ -71,6 +71,7 @@ class Device:
         self.lastPacket[iface].append(pkt)
         self.sockets[iface].send(pkt)
 
+    @threaded
     def _send_wait(self, hash, data, src_iface=""):
         current_wait_time = MIN_PKT_WAIT
         outport = self.enforcement.enforce(hash)
