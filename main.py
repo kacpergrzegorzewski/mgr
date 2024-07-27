@@ -13,6 +13,7 @@ def start_device(device_name, ldb_path, configurator_via, policy_engine_via, int
     print("[INFO] Starting device " + str(device_hash))
     ldb = LDBSQLite(ldb_path)
     add_configurator_path(ldb, configurator_via)
+    add_policy_engine_new_flow_path(ldb, policy_engine_via)
     device = Device(device_hash=device_hash, ldb=ldb, int_ifaces=int_ifaces, ext_ifaces=ext_ifaces)
 
 
