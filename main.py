@@ -7,7 +7,7 @@ from Network.Base.Env import *
 import yaml
 
 
-def start_device(device_name, ldb_path, configurator_via, int_ifaces, ext_ifaces):
+def start_device(device_name, ldb_path, configurator_via, policy_engine_via, int_ifaces, ext_ifaces):
     device_hash = Hasher.hasher(device_name.encode())
     print("[INFO] Starting device " + str(device_hash))
     ldb = LDBSQLite(ldb_path)
@@ -28,8 +28,15 @@ def ldb_test():
 
 
 def add_configurator_path(ldb, iface):
-    ldb.add_flow(CONFIGURATOR_ADD_LINK_HASH, iface)
-    print("[INFO] Path to configurator via: " + str(ldb.get_outport(CONFIGURATOR_ADD_LINK_HASH)))
+    _hash = CONFIGURATOR_ADD_LINK_HASH
+    ldb.add_flow(_hash, iface)
+    print("[INFO] Path to configurator via: " + str(ldb.get_outport(_hash)))
+
+
+def add_policy_engine_new_flow_path(ldb, iface):
+    _hash = POLICY_ENGINE_NEW_FLOW_HASH
+    ldb.add_flow(_hash, iface)
+    print("[INFO] Path to policy engine via: " + str(ldb.get_outport(_hash)))
 
 
 if __name__ == '__main__':
@@ -39,6 +46,7 @@ if __name__ == '__main__':
         start_device(config["spec"]["nodeName"],
                      config["spec"]["device"]["LDBPath"],
                      config["spec"]["device"]["configuratorVia"],
+                     config["spec"]["device"]["policyEngineVia"],
                      config["spec"]["device"]["intIfaces"],
                      config["spec"]["device"]["extIfaces"])
     elif config["type"] == "configurator":
