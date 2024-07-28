@@ -1,4 +1,5 @@
 import threading
+import time
 
 from scapy.sendrecv import sniff
 from socket import socket, PF_PACKET, SOCK_RAW
@@ -86,5 +87,6 @@ class PolicyEngine:
     @threaded
     def add_configurator_flow(self, flow, src_agent, dst_agent):
         _hash = CONFIGURATOR_ADD_FLOW_HASH
+        timeout = int(time.time() + self.flow_timeout).to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER)
         _data = flow + src_agent + dst_agent + self.flow_timeout
         self.send(_hash, _data)

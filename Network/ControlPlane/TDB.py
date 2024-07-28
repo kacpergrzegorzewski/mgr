@@ -20,17 +20,18 @@ class TDB:
         self.print_current_state()
 
     def update_node(self, node):
+        # TODO remove nodes after NODE_TIMEOUT
         if node not in self.tdb.nodes:
             self.tdb.add_node(node)
             print("[INFO] Added node " + str(node) + " to TDB.")
         # else:
         #     print("[INFO] Node " + str(node) + " exists.")
 
-    def get_link_source_iface(self, node_a, node_b):
-        return self.tdb.get_edge_data(node_a, node_b)["src_iface"]
+    def get_link_source_iface(self, source, destination):
+        return self.tdb.get_edge_data(source, destination)["src_iface"]
 
-    def get_link_destination_iface(self, node_a, node_b):
-        return self.tdb.get_edge_data(node_a, node_b)["dst_iface"]
+    def get_link_destination_iface(self, source, destination):
+        return self.tdb.get_edge_data(source, destination)["dst_iface"]
 
     def update_link(self, start, end, src_iface, dst_iface):
         if start and end in self.tdb.nodes:
@@ -39,7 +40,18 @@ class TDB:
             print("[WARNING] Node does not exist. Link " + str(start) + " -> " + str(end) + " not created in TDB.")
 
     def get_path(self, source=None, destination=None):
-        return nx.shortest_path(self.tdb, source, destination)
+        if source in self.tdb.nodes and destination in self.tdb.nodes:
+            try:
+                return nx.shortest_path(self.tdb, source, destination)
+            except nx.exception.NetworkXNoPath:
+                return []
+        return []
+
+    def get_neighbors(self, node):
+        try:
+            return self.tdb.adj[node]
+        except KeyError:
+            return []
 
     @threaded
     def print_current_state(self):

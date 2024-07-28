@@ -18,10 +18,17 @@ BEACON_INTERVAL = 2
 MIN_PKT_WAIT = 0.001
 MAX_PKT_WAIT = 2
 
+# Min and Max wait time for new link or new node in TDB in seconds (wait for node to be created)
+# Each time the TDB waits twice as long as before until it reaches MAX_LINK_WAIT e.g. 0.001, 0.002, 0.004, 0.008...
+MIN_TDB_WAIT = 0.001
+MAX_TDB_WAIT = 2
+
 # Length of all interfaces names in network (e.g. "ens16" = 5)
 IFACE_NAME_LENGTH = 5
 # Name of outport for packet drop action
 IFACE_NAME_DROP = "x"*IFACE_NAME_LENGTH
+# Name of every agent interface (used to distinguish between data plane devices and agent)
+IFACE_NAME_AGENT = "agent"[0:IFACE_NAME_LENGTH]
 
 # How to send data in network? (big endian, little endian)
 NETWORK_BYTEORDER = 'big'
