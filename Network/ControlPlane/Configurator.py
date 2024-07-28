@@ -83,11 +83,15 @@ class Configurator:
                 src_iface = self.tdb.get_link_source_iface(source=path[i], destination=path[i+1])
                 # Skip if the source is an agent. The configurator cannot configure the agent, at least for now...
                 if src_iface != IFACE_NAME_AGENT:
-                    self.send_ldb_entry(device=path[i], flow=flow, outport=src_iface, timeout=timeout)
+                    node = path[i]
+                    self.send_ldb_entry(device=node, flow=flow, outport=src_iface, timeout=timeout)
+                    print("[INFO] Sent to " + str(node) + " flow " + str(flow) + " via " + str(src_iface))
+
             # Add drop to every adjacent node if source and destination are the same
             if src_device == dst_device:
                 for node in self.tdb.get_neighbors(src_device):
                     self.send_ldb_entry(device=node, flow=flow, outport=IFACE_NAME_DROP.encode(), timeout=timeout)
+                    print("[INFO] Sent drop " + str(flow) + " to node " + str(node))
 
         elif pkt.hash == CONFIGURATOR_UPDATE_AGENT_HASH:
             agent_hash, device_hash, device_iface = pkt.extract_configurator_update_agent_data()
