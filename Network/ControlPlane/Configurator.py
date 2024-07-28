@@ -69,6 +69,7 @@ class Configurator:
 
         elif pkt.hash == CONFIGURATOR_ADD_FLOW_HASH:
             flow, src_device, dst_device, timeout = pkt.extract_configurator_add_flow_data()
+            timeout = timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER)
             path = self.tdb.get_path(source=src_device, destination=dst_device)
             current_wait = MIN_TDB_WAIT
             while len(path) == 0:
@@ -86,7 +87,7 @@ class Configurator:
             # Add drop to every adjacent node if source and destination are the same
             if src_device == dst_device:
                 for node in self.tdb.get_neighbors(src_device):
-                    self.send_ldb_entry(device=node, flow=flow, outport=IFACE_NAME_DROP, timeout=timeout)
+                    self.send_ldb_entry(device=node, flow=flow, outport=IFACE_NAME_DROP.encode(), timeout=timeout)
 
         elif pkt.hash == CONFIGURATOR_UPDATE_AGENT_HASH:
             agent_hash, device_hash, device_iface = pkt.extract_configurator_update_agent_data()

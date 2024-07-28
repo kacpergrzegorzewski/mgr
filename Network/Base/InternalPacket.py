@@ -87,6 +87,6 @@ class InternalPacket:
         pointer += Hasher.LENGTH
         dst_device = self.data[pointer:pointer + Hasher.LENGTH]
         pointer += Hasher.LENGTH
-        timeout = self.data[pointer:pointer+EPOCH_TIME_LENGTH]
+        timeout = int.from_bytes(self.data[pointer:pointer+EPOCH_TIME_LENGTH], byteorder=NETWORK_BYTEORDER)
 
         return [flow, src_device, dst_device, timeout]
