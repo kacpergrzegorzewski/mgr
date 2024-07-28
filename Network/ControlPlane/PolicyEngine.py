@@ -66,7 +66,6 @@ class PolicyEngine:
             src_agent = count_agent_hash(src_pkt.mac_src.encode(), src_pkt.ip_src.encode())
             dst_agent = count_agent_hash(src_pkt.mac_dst.encode(), src_pkt.ip_dst.encode())
             print("[INFO] Received new flow (" + str(flow) + ") request. Source agent + " + str(src_agent) + " destination agent: " + str(dst_agent))
-            print("MAC src: " + str(src_pkt.mac_src) + " MAC dst: " + str(src_pkt.mac_dst))
 
             # Update agent in TDB
             self.update_configurator_agent(src_agent, src_device, src_iface)
@@ -74,9 +73,11 @@ class PolicyEngine:
             # Allow only flows from allowed flows list
             if flow in self.allowed_flows:
                 self.add_configurator_flow(flow, src_agent, dst_agent)
+                print("[INFO] Allow flow " + str(flow))
             # Drop packet
             else:
                 self.add_configurator_flow(flow, src_agent, src_agent)
+                print("[INFO] Deny flow " + str(flow))
 
     @threaded
     def update_configurator_agent(self, agent_hash, edge_hash, edge_iface: str):
