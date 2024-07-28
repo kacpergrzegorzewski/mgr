@@ -68,7 +68,7 @@ class PolicyEngine:
             print("[INFO] Received new flow (" + str(flow) + ") request. "
                   "Source agent + " + str(src_agent) +
                   " destination agent: " + str(dst_agent) +
-                  " values: " + src_pkt.to_hash)
+                  " values: " + str(src_pkt.to_hash))
 
             # Update agent in TDB
             self.update_configurator_agent(src_agent, src_device, src_iface)
