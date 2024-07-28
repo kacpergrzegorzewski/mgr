@@ -88,5 +88,5 @@ class PolicyEngine:
     def add_configurator_flow(self, flow, src_agent, dst_agent):
         _hash = CONFIGURATOR_ADD_FLOW_HASH
         timeout = int(time.time() + self.flow_timeout).to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER)
-        _data = flow + src_agent + dst_agent + self.flow_timeout
+        _data = flow + src_agent + dst_agent + timeout
         self.send(_hash, _data)
