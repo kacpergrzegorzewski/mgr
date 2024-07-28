@@ -21,8 +21,8 @@ def start_configurator(iface):
     configurator = Configurator(iface=iface)
 
 
-def start_policy_engine(iface):
-    policy_engine = PolicyEngine(iface=iface)
+def start_policy_engine(iface, allowed_flows, flow_timeout):
+    policy_engine = PolicyEngine(iface=iface, allowed_flows=allowed_flows, flow_timeout=flow_timeout)
 
 
 def ldb_test():
@@ -37,7 +37,13 @@ def ldb_test():
 def add_configurator_path(ldb, iface):
     _hash = CONFIGURATOR_ADD_LINK_HASH
     ldb.add_flow(_hash, iface)
-    print("[INFO] Path to configurator via: " + str(ldb.get_outport(_hash)))
+    print("[INFO] Path to configurator add link via: " + str(ldb.get_outport(_hash)))
+    _hash = CONFIGURATOR_ADD_FLOW_HASH
+    ldb.add_flow(_hash, iface)
+    print("[INFO] Path to configurator add flow via: " + str(ldb.get_outport(_hash)))
+    _hash = CONFIGURATOR_UPDATE_AGENT_HASH
+    ldb.add_flow(_hash, iface)
+    print("[INFO] Path to configurator update agent via: " + str(ldb.get_outport(_hash)))
 
 
 def add_policy_engine_new_flow_path(ldb, iface):
@@ -59,6 +65,10 @@ if __name__ == '__main__':
     elif config["type"] == "configurator":
         start_configurator(config["spec"]["configurator"]["iface"])
     elif config["type"] == "policy-engine":
-        start_policy_engine(config["spec"]["policyEngine"]["iface"])
+        iface = config["spec"]["policyEngine"]["iface"]
+        flow_timeout = config["spec"]["policyEngine"]["flowTimeout"]
+        allowed_flows = config["spec"]["policyEngine"]["allowedFlows"]
+        start_policy_engine(iface=iface, allowed_flows=allowed_flows, flow_timeout=flow_timeout)
+
     # start_device()
 #    add_configurator_path("ens27")

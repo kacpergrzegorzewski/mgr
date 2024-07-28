@@ -12,3 +12,5 @@ spec:
     iface: ""
   policyEngine:
     iface: ""
+    allowedFlows: []
+    flowTimeout: 10

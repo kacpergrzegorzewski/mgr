@@ -20,6 +20,8 @@ MAX_PKT_WAIT = 2
 
 # Length of all interfaces names in network (e.g. "ens16" = 5)
 IFACE_NAME_LENGTH = 5
+# Name of outport for packet drop action
+IFACE_NAME_DROP = "x"*IFACE_NAME_LENGTH
 
 # How to send data in network? (big endian, little endian)
 NETWORK_BYTEORDER = 'big'

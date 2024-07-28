@@ -67,7 +67,7 @@ class InternalPacket:
 
     def extract_configurator_update_agent_data(self):
         #  data schema: |#########################|#########################|#########|
-        #                        agent hash          device (edge) hash        iface
+        #                        agent hash           device (edge) hash       iface
         pointer = 0
         agent_hash = self.data[pointer:pointer + Hasher.LENGTH]
         pointer += Hasher.LENGTH
@@ -78,15 +78,15 @@ class InternalPacket:
         return [agent_hash, device_hash, device_iface]
 
     def extract_configurator_add_flow_data(self):
-        #  data schema: |#########################|#########################|#########|####################|
-        #                        src device                dst device        dst iface        timeout
+        #  data schema: |#########################|#########################|#########################|####################|
+        #                      hash of flow                src agent                 dst agent                timeout
         pointer = 0
+        flow = self.data[pointer:pointer + Hasher.LENGTH]
+        pointer += Hasher.LENGTH
         src_device = self.data[pointer:pointer + Hasher.LENGTH]
         pointer += Hasher.LENGTH
         dst_device = self.data[pointer:pointer + Hasher.LENGTH]
         pointer += Hasher.LENGTH
-        dst_iface = self.data[pointer:pointer + IFACE_NAME_LENGTH].decode()
-        pointer += IFACE_NAME_LENGTH
         timeout = self.data[pointer:pointer+EPOCH_TIME_LENGTH]
 
-        return [src_device, dst_device, dst_iface, timeout]
+        return [flow, src_device, dst_device, timeout]

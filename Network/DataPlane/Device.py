@@ -68,8 +68,12 @@ class Device:
         self.beacon()
 
     def _send(self, iface, pkt: bytes):
-        self.lastPacket[iface].append(pkt)
-        self.sockets[iface].send(pkt)
+        if iface != IFACE_NAME_DROP:
+            self.lastPacket[iface].append(pkt)
+            self.sockets[iface].send(pkt)
+        # Drop packet
+        else:
+            return
 
     @threaded
     def _send_wait(self, hash, data, src_iface=""):
