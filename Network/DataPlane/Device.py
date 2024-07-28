@@ -149,7 +149,8 @@ class Device:
                 data = self.device_hash + pkt.iface.encode() + beacon_hash + beacon_iface.encode()
                 self._send_wait(CONFIGURATOR_ADD_LINK_HASH, data, src_iface=pkt.iface)
             elif pkt.hash == self.device_hash:
-                print("[INFO] Received new LDB entry.")
+                flow, outport, timeout = pkt.extract_ldb_add_entry_data()
+                print("[INFO] Received new LDB entry. Flow " + str(flow) + " via " + str(outport))
                 self.ldb.add_flow(*pkt.extract_ldb_add_entry_data())
             else:
                 print("[INFO] Received internal packet with hash: " + str(pkt.hash))
