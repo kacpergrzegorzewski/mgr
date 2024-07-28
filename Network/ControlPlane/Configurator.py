@@ -123,8 +123,6 @@ class Configurator:
                         if via != IFACE_NAME_AGENT:
                             endtime = ((int(time.time()) + self.INTERNAL_PATHS_LIFETIME).
                                        to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
-                            _hash = source
-                            _data = destination + via + endtime
                             self.send_ldb_entry(device=source, flow=destination, outport=via.encode(), timeout=endtime)
                             print("[INFO] sent to " + str(source) + " node " + str(destination) + " via " + str(via))
             time.sleep(self.CREATE_INTERNAL_PATHS_INTERVAL)
