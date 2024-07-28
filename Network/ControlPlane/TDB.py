@@ -47,6 +47,9 @@ class TDB:
                 return []
         return []
 
+    def get_all_paths(self):
+        return nx.shortest_path(self.tdb)
+
     def get_neighbors(self, node):
         try:
             return self.tdb.adj[node]

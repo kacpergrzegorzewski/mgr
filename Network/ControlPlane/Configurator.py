@@ -110,7 +110,7 @@ class Configurator:
     @threaded
     def create_internal_paths(self):
         while self.CREATE_INTERNAL_PATHS:
-            paths = self.tdb.get_path()
+            paths = self.tdb.get_all_paths()
             for source, destinations in paths.items():
                 for destination, path in destinations.items():
                     if len(path) > 1:  # not path to self
