@@ -17,8 +17,12 @@ def start_device(device_name, ldb_path, configurator_via, policy_engine_via, int
     device = Device(device_hash=device_hash, ldb=ldb, int_ifaces=int_ifaces, ext_ifaces=ext_ifaces)
 
 
-def start_configurator(iface):
-    configurator = Configurator(iface=iface)
+def start_configurator(iface, node_lifetime, link_lifetime, path_lifetime, create_paths_interval):
+    configurator = Configurator(iface=iface,
+                                node_lifetime=node_lifetime,
+                                link_lifetime=link_lifetime,
+                                path_lifetime=path_lifetime,
+                                create_paths_interval=create_paths_interval)
 
 
 def start_policy_engine(iface, allowed_flows, flow_timeout):
@@ -63,7 +67,11 @@ if __name__ == '__main__':
                      config["spec"]["device"]["intIfaces"],
                      config["spec"]["device"]["extIfaces"])
     elif config["type"] == "configurator":
-        start_configurator(config["spec"]["configurator"]["iface"])
+        start_configurator(iface=config["spec"]["configurator"]["iface"],
+                           node_lifetime=config["spec"]["configurator"]["nodeLifetime"],
+                           link_lifetime=config["spec"]["configurator"]["linkLifetime"],
+                           path_lifetime=config["spec"]["configurator"]["pathLifetime"],
+                           create_paths_interval=config["spec"]["configurator"]["createPathsInterval"])
     elif config["type"] == "policy-engine":
         iface = config["spec"]["policyEngine"]["iface"]
         flow_timeout = config["spec"]["policyEngine"]["flowTimeout"]

@@ -14,10 +14,13 @@ def threaded(fn):
 class TDB:
     TDB_PRINT = True
     TDB_PRINT_INTERVAL = 10
+    REMOVE_OLD_LINKS = True
+    REMOVE_OLD_LINKS_INTERVAL = 1
 
     def __init__(self):
         self.tdb = nx.DiGraph()
         self.print_current_state()
+        self.remove_old_links()
 
     def update_node(self, node):
         # TODO remove nodes after NODE_TIMEOUT
@@ -33,11 +36,16 @@ class TDB:
     def get_link_destination_iface(self, source, destination):
         return self.tdb.get_edge_data(source, destination)["dst_iface"]
 
-    def update_link(self, start, end, src_iface, dst_iface):
+    def update_link(self, start, end, src_iface, dst_iface, link_lifetime=10):
+        endtime = int(time.time() + link_lifetime)
         if start and end in self.tdb.nodes:
-            self.tdb.add_edge(start, end, src_iface=src_iface, dst_iface=dst_iface)
+            self.tdb.add_edge(start, end, src_iface=src_iface, dst_iface=dst_iface, endtime=endtime)
         else:
             print("[WARNING] Node does not exist. Link " + str(start) + " -> " + str(end) + " not created in TDB.")
+
+    def get_all_nodes_name(self):
+        # TODO
+        return
 
     def get_path(self, source=None, destination=None):
         if source in self.tdb.nodes and destination in self.tdb.nodes:
@@ -69,3 +77,12 @@ class TDB:
                 print(str(src_node) + " (" + str(src_iface) + ")-> " + str(dst_node) + "(" + str(dst_iface) + ")")
             print("===============================================================")
             time.sleep(self.TDB_PRINT_INTERVAL)
+
+    @threaded
+    def remove_old_links(self):
+        while self.REMOVE_OLD_LINKS:
+            current_time = time.time()
+            for edge in self.tdb.edges:
+                if current_time > edge["endtime"]:
+                    self.tdb.remove_edge(*edge)
+            time.sleep(self.REMOVE_OLD_LINKS_INTERVAL)

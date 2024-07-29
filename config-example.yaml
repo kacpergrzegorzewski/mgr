@@ -2,15 +2,19 @@ type: device # device, configurator, policy-engine
 spec:
   nodeName: "node01"
   device: # device specific
-    intIfaces: ["ens16"]
-    extIfaces: []
-    LDBType: "SQLite"
-    LDBPath: ""
-    configuratorVia: "ens16"
-    policyEngineVia: "ens16"
+    intIfaces: ["ens16"] # List of internal interfaces (for core and edge devices)
+    extIfaces: [] # List of external interfaces (for edge devices)
+    LDBType: "SQLite" # Only SQLite supported
+    LDBPath: "" # Path to SQLite LDB file
+    configuratorVia: "ens16" # Route to configurator
+    policyEngineVia: "ens16" # Route to policy engine
   configurator:
-    iface: ""
+    iface: "" # Name of interface for sending and receiving data
+    nodeLifetime: 30 # Node lifetime in TDB
+    linkLifetime: 15 # Link lifetime in TDB
+    pathLifetime: 15 # LDB entry lifetime for internal paths sent to data plane devices
+    createPathsInterval: 7 # Internal path creation interval
   policyEngine:
-    iface: ""
-    allowedFlows: []
-    flowTimeout: 10
+    iface: "" # Name of interface for sending and receiving data
+    allowedFlows: [] # List of allowed flows (static)
+    flowTimeout: 10 # Timeout for allowed and denied flows in LDB

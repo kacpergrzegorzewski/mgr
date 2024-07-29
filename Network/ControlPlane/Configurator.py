@@ -21,13 +21,16 @@ class Configurator:
     TDB_PRINT = True
     TDB_PRINT_INTERVAL = 10
     CREATE_INTERNAL_PATHS = True
-    CREATE_INTERNAL_PATHS_INTERVAL = 7
-    INTERNAL_PATHS_LIFETIME = 2*CREATE_INTERNAL_PATHS_INTERVAL+1
 
-    def __init__(self, iface):
+    def __init__(self, iface, node_lifetime, link_lifetime, path_lifetime, create_paths_interval):
         print("[INFO] Initializing Configurator")
         self.iface = iface
         self.tdb = TDB()
+        self.node_lifetime = node_lifetime
+        self.link_lifetime = link_lifetime
+        self.path_lifetime = path_lifetime
+        self.create_paths_interval = create_paths_interval
+
         self.sniff(self.recv, self.iface)
         self.create_internal_paths()
         self.socket = socket(PF_PACKET, SOCK_RAW)
@@ -64,7 +67,8 @@ class Configurator:
                 start=src_hash,
                 end=dst_hash,
                 src_iface=src_iface,
-                dst_iface=dst_iface
+                dst_iface=dst_iface,
+                link_lifetime=self.link_lifetime
             )
 
         elif pkt.hash == CONFIGURATOR_ADD_FLOW_HASH:
@@ -121,8 +125,8 @@ class Configurator:
                     if len(path) > 1:  # not path to self
                         via = self.tdb.get_link_source_iface(path[0], path[1])
                         if via != IFACE_NAME_AGENT:
-                            endtime = ((int(time.time()) + self.INTERNAL_PATHS_LIFETIME).
+                            endtime = ((int(time.time()) + self.path_lifetime).
                                        to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
                             self.send_ldb_entry(device=source, flow=destination, outport=via.encode(), timeout=endtime)
                             print("[INFO] sent to " + str(source) + " node " + str(destination) + " via " + str(via))
-            time.sleep(self.CREATE_INTERNAL_PATHS_INTERVAL)
+            time.sleep(self.create_paths_interval)
