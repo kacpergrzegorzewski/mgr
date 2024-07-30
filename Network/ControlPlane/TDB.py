@@ -32,7 +32,9 @@ class TDB:
     def update_node(self, node):
         # TODO remove nodes after NODE_TIMEOUT
         if node not in self.tdb.nodes:
+            self.edge_lock.acquire(True)
             self.tdb.add_node(node)
+            self.edge_lock.release()
             print("[INFO] Added node " + str(node) + " to TDB.")
         # else:
         #     print("[INFO] Node " + str(node) + " exists.")
