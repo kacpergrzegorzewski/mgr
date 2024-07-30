@@ -88,7 +88,8 @@ class Configurator:
                 # Skip if the source is an agent. The configurator cannot configure the agent, at least for now...
                 if src_iface != IFACE_NAME_AGENT:
                     node = path[i]
-                    self.send_ldb_entry(device=node, flow=flow, outport=src_iface, timeout=timeout)
+                    outport = src_iface.encode()
+                    self.send_ldb_entry(device=node, flow=flow, outport=outport, timeout=timeout)
                     print("[INFO] Sent to " + str(node) + " flow " + str(flow) + " via " + str(src_iface))
 
             # Add drop to every adjacent node if source and destination are the same
