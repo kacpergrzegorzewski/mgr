@@ -55,6 +55,7 @@ class Configurator:
 
         sniff(prn=prn, iface=iface)
 
+    @threaded
     def recv(self, pkt):
         pkt = InternalPacket(pkt)
         if pkt.hash == CONFIGURATOR_ADD_LINK_HASH:
