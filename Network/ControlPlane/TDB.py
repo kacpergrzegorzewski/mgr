@@ -89,6 +89,6 @@ class TDB:
         while self.REMOVE_OLD_LINKS:
             current_time = time.time()
             for edge in self.tdb.edges:
-                if current_time > edge["endtime"]:
+                if current_time > self.tdb.get_edge_data(*edge)["endtime"]:
                     self.tdb.remove_edge(*edge)
             time.sleep(self.REMOVE_OLD_LINKS_INTERVAL)
