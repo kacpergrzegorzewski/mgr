@@ -22,6 +22,8 @@ class LDBSQLite:
         print("[INFO] Initializing LDB in " + filename)
         self.db_lock = Lock()
         self._init_db(filename)
+        self._delete_old_flows()
+        self._print_ldb()
 
     def _init_db(self, filename):
         self.db = sqlite3.connect(filename, check_same_thread=False)
@@ -33,7 +35,6 @@ class LDBSQLite:
             self.db_lock.acquire(True)
             self.cursor.execute("CREATE TABLE ldb(hash BLOB PRIMARY KEY ON CONFLICT REPLACE, outport, endtime)")
             self.db_lock.release()
-        self._delete_old_flows()
 
     def get_outport(self, hash):
         self.db_lock.acquire(True)
