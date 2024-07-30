@@ -40,10 +40,16 @@ class TDB:
         #     print("[INFO] Node " + str(node) + " exists.")
 
     def get_link_source_iface(self, source, destination):
-        return self.tdb.get_edge_data(source, destination)["src_iface"]
+        try:
+            return self.tdb.get_edge_data(source, destination)["src_iface"]
+        except TypeError:
+            print("[WARNING] Link src: " + str(source) + " dst: " + str(destination) + " not found!")
 
     def get_link_destination_iface(self, source, destination):
-        return self.tdb.get_edge_data(source, destination)["dst_iface"]
+        try:
+            return self.tdb.get_edge_data(source, destination)["dst_iface"]
+        except TypeError:
+            print("[WARNING] Link src: " + str(source) + " dst: " + str(destination) + " not found!")
 
     @threaded
     def update_link(self, start, end, src_iface, dst_iface, link_lifetime=10):
