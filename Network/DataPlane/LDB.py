@@ -15,6 +15,8 @@ def threaded(fn):
 class LDBSQLite:
     DELETE_OLD_FLOWS = True
     DELETE_OLD_FLOWS_INTERVAL = 5
+    PRINT_LDB = True
+    PRINT_LDB_INTERVAL = 10
 
     def __init__(self, filename):
         print("[INFO] Initializing LDB in " + filename)
@@ -66,3 +68,13 @@ class LDBSQLite:
             self.db.commit()
             self.db_lock.release()
             time.sleep(self.DELETE_OLD_FLOWS_INTERVAL)
+
+    @threaded
+    def _print_ldb(self):
+        while self.PRINT_LDB:
+            print("======== Current LDB state ========")
+            rows = self.get_all()
+            for row in rows:
+                print(row)
+            print("===================================")
+            time.sleep(self.PRINT_LDB_INTERVAL)
