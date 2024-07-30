@@ -149,9 +149,9 @@ class Device:
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             if pkt.hash == BEACON_HASH:
                 beacon_hash, beacon_iface = pkt.extract_beacon_data()
-                print("[INFO] Received Beacon from " + str(beacon_hash) +
-                      ". Local interface: " + str(pkt.iface) +
-                      ". Remote interface: " + str(beacon_iface))
+                # print("[INFO] Received Beacon from " + str(beacon_hash) +
+                #      ". Local interface: " + str(pkt.iface) +
+                #      ". Remote interface: " + str(beacon_iface))
                 # send link discovery to configurator
                 data = self.device_hash + pkt.iface.encode() + beacon_hash + beacon_iface.encode()
                 self._send_wait(CONFIGURATOR_ADD_LINK_HASH, data, src_iface=pkt.iface)
@@ -178,7 +178,7 @@ class Device:
             while self.BEACON_STATUS:
                 # send beacon on all internal interfaces
                 for iface in self.int_ifaces:
-                    print("[INFO] sending beacon on interface " + str(iface))
+                    # print("[INFO] sending beacon on interface " + str(iface))
                     data = BEACON_HASH + self.device_hash + iface.encode()
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon

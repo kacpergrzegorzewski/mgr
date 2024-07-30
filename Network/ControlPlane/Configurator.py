@@ -60,8 +60,8 @@ class Configurator:
         pkt = InternalPacket(pkt)
         if pkt.hash == CONFIGURATOR_ADD_LINK_HASH:
             src_hash, src_iface, dst_hash, dst_iface = pkt.extract_configurator_add_link_data()
-            print("[INFO] Received link discovery packet from " + str(src_hash) + " (" + str(src_iface) + ") to " +
-                  str(dst_hash) + " (" + str(dst_iface) + ")")
+            # print("[INFO] Received link discovery packet from " + str(src_hash) + " (" + str(src_iface) + ") to " +
+            #      str(dst_hash) + " (" + str(dst_iface) + ")")
             self.tdb.update_node(src_hash)
             self.tdb.update_node(dst_hash)
             self.tdb.update_link(
