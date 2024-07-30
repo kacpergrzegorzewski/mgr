@@ -126,9 +126,10 @@ class Configurator:
                 for destination, path in destinations.items():
                     if len(path) > 1:  # not path to self
                         via = self.tdb.get_link_source_iface(path[0], path[1])
-                        if via != IFACE_NAME_AGENT:
-                            endtime = ((int(time.time()) + self.path_lifetime).
-                                       to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
-                            self.send_ldb_entry(device=source, flow=destination, outport=via.encode(), timeout=endtime)
-                            print("[INFO] sent to " + str(source) + " node " + str(destination) + " via " + str(via))
+                        if via is not None:
+                            if via != IFACE_NAME_AGENT:
+                                endtime = ((int(time.time()) + self.path_lifetime).
+                                           to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
+                                self.send_ldb_entry(device=source, flow=destination, outport=via.encode(), timeout=endtime)
+                                print("[INFO] sent to " + str(source) + " node " + str(destination) + " via " + str(via))
             time.sleep(self.create_paths_interval)

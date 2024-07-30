@@ -68,17 +68,17 @@ class TDB:
     def get_path(self, source=None, destination=None):
         if source in self.tdb.nodes and destination in self.tdb.nodes:
             try:
-                return nx.shortest_path(self.tdb, source, destination)
+                return nx.shortest_path(self.tdb, source, destination).copy()
             except nx.exception.NetworkXNoPath:
                 return []
         return []
 
     def get_all_paths(self):
-        return nx.shortest_path(self.tdb)
+        return nx.shortest_path(self.tdb).copy()
 
     def get_neighbors(self, node):
         try:
-            return self.tdb.adj[node]
+            return self.tdb.adj[node].copy()
         except KeyError:
             return []
 
