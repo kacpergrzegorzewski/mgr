@@ -24,7 +24,7 @@ class TDB:
     REMOVE_OLD_LINKS_INTERVAL = 1
 
     def __init__(self):
-        self.edge_lock = threading.Lock()
+        # self.edge_lock = threading.Lock()
         self.tdb = nx.DiGraph()
         self.print_current_state()
         self.remove_old_links()
@@ -32,9 +32,9 @@ class TDB:
     def update_node(self, node):
         # TODO remove nodes after NODE_TIMEOUT
         if node not in self.tdb.nodes:
-            self.edge_lock.acquire(True)
+            # self.edge_lock.acquire(True)
             self.tdb.add_node(node)
-            self.edge_lock.release()
+            # self.edge_lock.release()
             print("[INFO] Added node " + str(node) + " to TDB.")
         # else:
         #     print("[INFO] Node " + str(node) + " exists.")
@@ -49,9 +49,9 @@ class TDB:
     def update_link(self, start, end, src_iface, dst_iface, link_lifetime=10):
         endtime = int(time.time() + link_lifetime)
         if start and end in self.tdb.nodes:
-            self.edge_lock.acquire(True)
+            #self.edge_lock.acquire(True)
             self.tdb.add_edge(start, end, src_iface=src_iface, dst_iface=dst_iface, endtime=endtime)
-            self.edge_lock.release()
+            #self.edge_lock.release()
         else:
             print("[WARNING] Node does not exist. Link " + str(start) + " -> " + str(end) + " not created in TDB.")
 
@@ -81,14 +81,14 @@ class TDB:
         while self.TDB_PRINT:
             print("===============================================================")
             print("Current TDB state:")
-            self.edge_lock.acquire(True)
+            # self.edge_lock.acquire(True)
             for edge in self.tdb.edges:
                 src_node = edge[0]
                 dst_node = edge[1]
                 src_iface = self.tdb.edges[src_node, dst_node]["src_iface"]
                 dst_iface = self.tdb.edges[src_node, dst_node]["dst_iface"]
                 print(str(src_node) + " (" + str(src_iface) + ")-> " + str(dst_node) + "(" + str(dst_iface) + ")")
-            self.edge_lock.release()
+            # self.edge_lock.release()
             print("===============================================================")
             time.sleep(self.TDB_PRINT_INTERVAL)
 
@@ -97,11 +97,11 @@ class TDB:
         while self.REMOVE_OLD_LINKS:
             current_time = time.time()
             to_remove = []
-            self.edge_lock.acquire(True)
+            # self.edge_lock.acquire(True)
             for edge in self.tdb.edges:
                 if current_time > self.tdb.get_edge_data(*edge)["endtime"]:
                     to_remove.append(edge)
             for edge in to_remove:
                 self.tdb.remove_edge(*edge)
-            self.edge_lock.release()
+            # self.edge_lock.release()
             time.sleep(self.REMOVE_OLD_LINKS_INTERVAL)
