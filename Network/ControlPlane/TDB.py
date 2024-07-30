@@ -75,7 +75,8 @@ class TDB:
         while self.TDB_PRINT:
             print("===============================================================")
             print("Current TDB state:")
-            for edge in self.tdb.edges:
+            edges = self.tdb.edges
+            for edge in edges:
                 src_node = edge[0]
                 dst_node = edge[1]
                 src_iface = self.tdb.edges[src_node, dst_node]["src_iface"]
@@ -88,7 +89,8 @@ class TDB:
     def remove_old_links(self):
         while self.REMOVE_OLD_LINKS:
             current_time = time.time()
-            for edge in self.tdb.edges:
+            edges = self.tdb.edges
+            for edge in edges:
                 if current_time > self.tdb.get_edge_data(*edge)["endtime"]:
                     self.tdb.remove_edge(*edge)
             time.sleep(self.REMOVE_OLD_LINKS_INTERVAL)
