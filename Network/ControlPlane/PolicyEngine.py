@@ -32,7 +32,7 @@ class PolicyEngine:
         if allowed_flows is None:
             self.allowed_flows = []
         elif type(allowed_flows) == list:
-            self.allowed_flows = [hash(allowed_flow.encode) for allowed_flow in allowed_flows]
+            self.allowed_flows = [Hasher.hash(allowed_flow.encode()) for allowed_flow in allowed_flows]
         else:
             print("[ERROR] Allowed flows are in an invalid format!")
         self.flow_timeout = flow_timeout
