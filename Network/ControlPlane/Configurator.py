@@ -26,10 +26,10 @@ class Configurator:
         print("[INFO] Initializing Configurator")
         self.iface = iface
         self.tdb = TDB()
-        self.node_lifetime = node_lifetime
-        self.link_lifetime = link_lifetime
-        self.path_lifetime = path_lifetime
-        self.create_paths_interval = create_paths_interval
+        self.node_lifetime = int(node_lifetime)
+        self.link_lifetime = int(link_lifetime)
+        self.path_lifetime = int(path_lifetime)
+        self.create_paths_interval = int(create_paths_interval)
 
         self.sniff(self.recv, self.iface)
         self.create_internal_paths()
