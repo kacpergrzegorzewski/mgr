@@ -125,6 +125,7 @@ class Device:
         """
         sniff(prn=prn, iface=iface, store=0)
 
+    @threaded
     def ext_iface_recv(self, pkt):
         """
         Function triggered for every packet received on external iface
@@ -137,7 +138,7 @@ class Device:
             flow_hash = Hasher.hash(pkt.to_hash)
             self._send_wait(flow_hash, pkt.raw_pkt, src_iface=pkt.iface)
 
-
+    @threaded
     def int_iface_recv(self, pkt):
         """
         Function triggered for every packet received on internal iface
