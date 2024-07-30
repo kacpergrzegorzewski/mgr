@@ -11,6 +11,12 @@ def threaded(fn):
     return wrapper
 
 
+class _Node:
+    def __init__(self, name, endtime):
+        self.name = name
+        self.endtime = endtime
+
+
 class TDB:
     TDB_PRINT = True
     TDB_PRINT_INTERVAL = 10
