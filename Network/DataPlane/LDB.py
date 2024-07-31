@@ -24,6 +24,8 @@ class LDBSQLite:
         self._init_db(filename)
         self._delete_old_flows()
         self._print_ldb()
+        self.number_of_lookups = 0
+        self.sum_of_lookup_time = 0
 
     def _init_db(self, filename):
         self.db = sqlite3.connect(filename, check_same_thread=False)
@@ -37,9 +39,13 @@ class LDBSQLite:
             self.db_lock.release()
 
     def get_outport(self, hash):
+        self.number_of_lookups += 1
+        time_before = time.time_ns()
         self.db_lock.acquire(True)
         response = self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()
         self.db_lock.release()
+        time_after = time.time_ns()
+        self.sum_of_lookup_time += time_after-time_before
         if response is None:
             return None
         else:
@@ -74,6 +80,8 @@ class LDBSQLite:
     def _print_ldb(self):
         while self.PRINT_LDB:
             print("======== Current LDB state ========")
+            if self.number_of_lookups != 0:
+                print("Average lookup time: " + str(self.sum_of_lookup_time/self.number_of_lookups) + "ns")
             rows = self.get_all()
             for row in rows:
                 print(row)
