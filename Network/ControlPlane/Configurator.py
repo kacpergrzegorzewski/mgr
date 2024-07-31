@@ -75,7 +75,6 @@ class Configurator:
         elif pkt.hash == CONFIGURATOR_ADD_FLOW_HASH:
             flow, src_device, dst_device, timeout = pkt.extract_configurator_add_flow_data()
             print("[INFO] Received add flow: " + str(flow) + " src: " + str(src_device) + " dst: " + str(dst_device) + " endtime " + str(timeout))
-            timeout = timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER)
             path = self.tdb.get_path(source=src_device, destination=dst_device)
             current_wait = MIN_TDB_WAIT
             while len(path) == 0:
@@ -91,7 +90,9 @@ class Configurator:
                 if src_iface != IFACE_NAME_AGENT:
                     node = path[i]
                     outport = src_iface.encode()
-                    self.send_ldb_entry(device=node, flow=flow, outport=outport, timeout=timeout)
+                    self.send_ldb_entry(device=node, flow=flow, outport=outport, timeout=timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
+                    # increment timeout for every device
+                    timeout += 1
                     print("[INFO] Sent to " + str(node) + " flow " + str(flow) + " via " + str(src_iface))
 
             # Add drop to every adjacent node if source and destination are the same
