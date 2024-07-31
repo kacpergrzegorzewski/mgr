@@ -44,7 +44,7 @@ class LDBSQLite:
         response = self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()
         self.db_lock.release()
         time_after = time.time_ns()
-        self.sum_of_lookup_time += time_after - time_before
+        self.sum_of_lookup_time += (time_after - time_before)/1_000_000  # time in ms
         if response is None:
             return None
         else:
@@ -80,7 +80,7 @@ class LDBSQLite:
         while self.PRINT_LDB:
             print("======== Current LDB state ========")
             if self.number_of_lookups != 0:
-                print("Average lookup time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ns")
+                print("Average lookup time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ms")
             rows = self.get_all()
             for row in rows:
                 print(row)
