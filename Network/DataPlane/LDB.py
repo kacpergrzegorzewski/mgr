@@ -11,7 +11,6 @@ def threaded(fn):
     return wrapper
 
 
-
 class LDBSQLite:
     DELETE_OLD_FLOWS = True
     DELETE_OLD_FLOWS_INTERVAL = 5
@@ -20,12 +19,12 @@ class LDBSQLite:
 
     def __init__(self, filename):
         print("[INFO] Initializing LDB in " + filename)
+        self.number_of_lookups = 0
+        self.sum_of_lookup_time = 0
         self.db_lock = Lock()
         self._init_db(filename)
         self._delete_old_flows()
         self._print_ldb()
-        self.number_of_lookups = 0
-        self.sum_of_lookup_time = 0
 
     def _init_db(self, filename):
         self.db = sqlite3.connect(filename, check_same_thread=False)
@@ -45,7 +44,7 @@ class LDBSQLite:
         response = self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()
         self.db_lock.release()
         time_after = time.time_ns()
-        self.sum_of_lookup_time += time_after-time_before
+        self.sum_of_lookup_time += time_after - time_before
         if response is None:
             return None
         else:
@@ -81,7 +80,7 @@ class LDBSQLite:
         while self.PRINT_LDB:
             print("======== Current LDB state ========")
             if self.number_of_lookups != 0:
-                print("Average lookup time: " + str(self.sum_of_lookup_time/self.number_of_lookups) + "ns")
+                print("Average lookup time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ns")
             rows = self.get_all()
             for row in rows:
                 print(row)
