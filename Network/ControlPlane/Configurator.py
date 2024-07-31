@@ -74,6 +74,7 @@ class Configurator:
 
         elif pkt.hash == CONFIGURATOR_ADD_FLOW_HASH:
             flow, src_device, dst_device, timeout = pkt.extract_configurator_add_flow_data()
+            print("[INFO] Received add flow: " + str(flow) + " src: " + str(src_device) + " dst: " + str(dst_device) + " endtime " + str(timeout))
             timeout = timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER)
             path = self.tdb.get_path(source=src_device, destination=dst_device)
             current_wait = MIN_TDB_WAIT
