@@ -25,12 +25,18 @@ def threaded(fn):
 
 class Device:
     BEACON_STATUS = True
+    PRINT_STATISTICS = True
+    PRINT_STATISTICS_INTERVAL = 10
 
     def __init__(self, device_hash, ldb, ext_ifaces=None, int_ifaces=None, max_last_packet_queue_size=10):
         self.ext_ifaces = ext_ifaces
         self.int_ifaces = int_ifaces
         self.device_hash = device_hash
         self.ldb = ldb
+
+        self.number_of_pkt_wait = 0
+        self.time_of_pkt_wait = 0
+
         # Create enforcement with LDB located in DB folder and named same as device_id but converted to int
         self.enforcement = Enforcement(ldb=self.ldb)
 
@@ -67,6 +73,9 @@ class Device:
         # start sending beacon every BEACON_INTERVAL
         self.beacon()
 
+        # Start printing statistics
+        self.print_statistics()
+
     def _send(self, iface, pkt: bytes):
         if iface != IFACE_NAME_DROP:
             self.lastPacket[iface].append(pkt)
@@ -90,6 +99,7 @@ class Device:
                 print("[ERROR] Policy engine outport not found in LDB!")
                 return
             else:
+                time_before = time.time_ns()
                 if src_iface in self.ext_ifaces:
                     # send request to policy engine
                     self._send(policy_engine_outport,
@@ -98,6 +108,9 @@ class Device:
                 while current_wait_time < MAX_PKT_WAIT:
                     outport = self.enforcement.enforce(hash)
                     if outport is not None:
+                        time_after = time.time_ns()
+                        self.time_of_pkt_wait += (time_after-time_before) / 1_000_000  # time in ms
+                        self.number_of_pkt_wait += 1
                         print("[INFO] Sending data to" + str(hash) + " via " + str(outport))
                         if outport in self.ext_ifaces:
                             self._send(outport, data)
@@ -184,3 +197,11 @@ class Device:
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon
                 sleep(BEACON_INTERVAL)
+
+    @threaded
+    def print_statistics(self):
+        while self.PRINT_STATISTICS:
+            print("============ statistics ============")
+            print("Average packet wait: " + str(self.time_of_pkt_wait/self.number_of_pkt_wait))
+            print("====================================")
+            time.sleep(self.PRINT_STATISTICS_INTERVAL)
