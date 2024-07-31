@@ -98,7 +98,7 @@ class Configurator:
             # Add drop to every adjacent node if source and destination are the same
             if src_device == dst_device:
                 for node in self.tdb.get_neighbors(src_device):
-                    self.send_ldb_entry(device=node, flow=flow, outport=IFACE_NAME_DROP.encode(), timeout=timeout)
+                    self.send_ldb_entry(device=node, flow=flow, outport=IFACE_NAME_DROP.encode(), timeout=timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
                     print("[INFO] Sent drop " + str(flow) + " to node " + str(node))
 
         elif pkt.hash == CONFIGURATOR_UPDATE_AGENT_HASH:
