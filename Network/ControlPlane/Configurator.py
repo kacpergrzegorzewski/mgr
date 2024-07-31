@@ -110,14 +110,16 @@ class Configurator:
                 start=agent_hash,
                 end=device_hash,
                 src_iface=IFACE_NAME_AGENT,
-                dst_iface=device_iface
+                dst_iface=device_iface,
+                link_lifetime=600
             )
             # device -> agent
             self.tdb.update_link(
                 start=device_hash,
                 end=agent_hash,
                 src_iface=device_iface,
-                dst_iface=IFACE_NAME_AGENT
+                dst_iface=IFACE_NAME_AGENT,
+                link_lifetime=600
             )
 
     @threaded
