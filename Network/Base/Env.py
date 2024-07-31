@@ -15,7 +15,7 @@ BEACON_INTERVAL = 2
 
 # Min and Max wait time for new packet in seconds (time to add LDB entry by control plane)
 # Each time the device waits twice as long as before until it reaches MAX_PKT_WAIT e.g. 0.001, 0.002, 0.004, 0.008...
-MIN_PKT_WAIT = 0.001
+MIN_PKT_WAIT = 0.00001
 MAX_PKT_WAIT = 2
 
 # Min and Max wait time for new link or new node in TDB in seconds (wait for node to be created)
