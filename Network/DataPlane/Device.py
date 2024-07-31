@@ -105,7 +105,7 @@ class Device:
                             self._send(outport, hash + data)
                         return
                     time.sleep(current_wait_time)
-                    current_wait_time *= 2
+                    current_wait_time += 1
                 print("[WARNING] Flow " + str(hash) + " dropped due to missing entry in LDB.")
         # outport in LDB
         else:
