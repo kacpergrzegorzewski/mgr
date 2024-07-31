@@ -102,6 +102,7 @@ class Configurator:
 
         elif pkt.hash == CONFIGURATOR_UPDATE_AGENT_HASH:
             agent_hash, device_hash, device_iface = pkt.extract_configurator_update_agent_data()
+            print("[INFO] Received update agent: " + str(agent_hash))
             self.tdb.update_node(agent_hash)
             self.tdb.update_node(device_hash)
             # agent -> device
