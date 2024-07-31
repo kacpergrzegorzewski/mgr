@@ -133,5 +133,5 @@ class Configurator:
                                 endtime = ((int(time.time()) + self.path_lifetime).
                                            to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
                                 self.send_ldb_entry(device=source, flow=destination, outport=via.encode(), timeout=endtime)
-                                print("[INFO] sent to " + str(source) + " node " + str(destination) + " via " + str(via))
+                                # print("[INFO] sent to " + str(source) + " node " + str(destination) + " via " + str(via))
             time.sleep(self.create_paths_interval)
