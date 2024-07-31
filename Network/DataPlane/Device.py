@@ -90,9 +90,10 @@ class Device:
                 print("[ERROR] Policy engine outport not found in LDB!")
                 return
             else:
-                # send request to policy engine
-                self._send(policy_engine_outport,
-                           POLICY_ENGINE_NEW_FLOW_HASH + hash + self.device_hash + src_iface.encode() + data)
+                if src_iface in self.ext_ifaces:
+                    # send request to policy engine
+                    self._send(policy_engine_outport,
+                               POLICY_ENGINE_NEW_FLOW_HASH + hash + self.device_hash + src_iface.encode() + data)
                 # wait for LDB reconfiguration
                 while current_wait_time < MAX_PKT_WAIT:
                     outport = self.enforcement.enforce(hash)
@@ -183,4 +184,3 @@ class Device:
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon
                 sleep(BEACON_INTERVAL)
-
