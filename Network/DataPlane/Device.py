@@ -135,7 +135,7 @@ class Device:
         pkt = ExternalPacket(pkt)
         # check if packet is not in last sent packets (sniff also captures sent packets)
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
-            print("[WARNING] Received external packet with values: " + str(pkt.to_hash))
+            print("[INFO] Received external packet with values: " + str(pkt.to_hash))
             flow_hash = Hasher.hash(pkt.to_hash)
             self._send_wait(flow_hash, pkt.raw_pkt, src_iface=pkt.iface)
 
