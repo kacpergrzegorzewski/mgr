@@ -202,6 +202,7 @@ class Device:
     def print_statistics(self):
         while self.PRINT_STATISTICS:
             print("============ statistics ============")
-            print("Average packet wait: " + str(self.time_of_pkt_wait/self.number_of_pkt_wait))
+            if self.number_of_pkt_wait != 0:
+                print("Average packet wait: " + str(self.time_of_pkt_wait/self.number_of_pkt_wait))
             print("====================================")
             time.sleep(self.PRINT_STATISTICS_INTERVAL)
