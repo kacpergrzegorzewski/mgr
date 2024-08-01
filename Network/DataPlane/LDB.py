@@ -21,6 +21,8 @@ class LDBSQLite:
         print("[INFO] Initializing LDB in " + filename)
         self.number_of_lookups = 0
         self.sum_of_lookup_time = 0
+        self.number_of_writes = 0
+        self.sum_of_write_time = 0
         self.db_lock = Lock()
         self._init_db(filename)
         self._delete_old_flows()
@@ -58,11 +60,15 @@ class LDBSQLite:
 
     @threaded
     def add_flow(self, hash, outport, endtime="4070908800"):  # 01.01.2099
+        time_before = time.time_ns()
         self.db_lock.acquire(True)
         self.cursor.execute("INSERT OR REPLACE INTO ldb(hash,outport,endtime) VALUES (?,?,?)",
                             (memoryview(hash), outport, endtime))
         self.db.commit()
         self.db_lock.release()
+        time_after = time.time_ns()
+        self.sum_of_write_time += (time_after-time_before) / 1_000_000  # ms
+        self.number_of_writes += 1
 
     @threaded
     def _delete_old_flows(self):
@@ -81,6 +87,8 @@ class LDBSQLite:
             print("======== Current LDB state ========")
             if self.number_of_lookups != 0:
                 print("Average lookup time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ms")
+            if self.number_of_writes != 0:
+                print("Average write time: " + str(self.sum_of_write_time / self.number_of_writes) + "ms")
             rows = self.get_all()
             for row in rows:
                 print(row)
