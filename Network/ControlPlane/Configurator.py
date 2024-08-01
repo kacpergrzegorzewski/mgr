@@ -84,13 +84,18 @@ class Configurator:
                     print("[WARNING] Path from " + str(src_device) + " to " + str(dst_device) + " not found.")
                     return
                 time.sleep(current_wait)
+            # Configure all nodes in path except last one (skip if length of path is 1 -- path to self)
             for i in range(len(path)-1):
-                src_iface = self.tdb.get_link_source_iface(source=path[i], destination=path[i+1])
+                node = path[i]
+                next_node = path[i+1]
+                src_iface = self.tdb.get_link_source_iface(source=node, destination=next_node)
                 # Skip if the source is an agent. The configurator cannot configure the agent, at least for now...
                 if src_iface != IFACE_NAME_AGENT:
-                    node = path[i]
                     outport = src_iface.encode()
-                    self.send_ldb_entry(device=node, flow=flow, outport=outport, timeout=timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
+                    self.send_ldb_entry(device=node,
+                                        flow=flow,
+                                        outport=outport,
+                                        timeout=timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
                     # increment timeout for every device
                     timeout += 1
                     print("[INFO] Sent to " + str(node) + " flow " + str(flow) + " via " + str(src_iface))
