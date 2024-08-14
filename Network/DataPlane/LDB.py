@@ -26,7 +26,7 @@ class LDBSQLite:
         self.db_lock = Lock()
         self._init_db(filename)
         self._delete_old_flows()
-        self._print_ldb()
+        # self._print_ldb()
 
     def _init_db(self, filename):
         self.db = sqlite3.connect(filename, check_same_thread=False)
