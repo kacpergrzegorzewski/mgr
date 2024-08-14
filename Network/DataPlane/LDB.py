@@ -26,7 +26,7 @@ class LDBSQLite:
         self.db_lock = Lock()
         self._init_db(filename)
         self._delete_old_flows()
-        # self._print_ldb()
+        self._print_ldb()
 
     def _init_db(self, filename):
         self.db = sqlite3.connect(filename, check_same_thread=False)
@@ -84,13 +84,14 @@ class LDBSQLite:
     @threaded
     def _print_ldb(self):
         while self.PRINT_LDB:
-            print("======== Current LDB state ========")
-            if self.number_of_lookups != 0:
-                print("Average read time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ms")
-            if self.number_of_writes != 0:
-                print("Average write time: " + str(self.sum_of_write_time / self.number_of_writes) + "ms")
+            print("========================= Current LDB state =========================")
+            # if self.number_of_lookups != 0:
+            #     print("Average read time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ms")
+            # if self.number_of_writes != 0:
+            #     print("Average write time: " + str(self.sum_of_write_time / self.number_of_writes) + "ms")
+            print("flow,outport,endtime")
             rows = self.get_all()
             for row in rows:
                 print(row)
-            print("===================================")
+            print("=====================================================================")
             time.sleep(self.PRINT_LDB_INTERVAL)
