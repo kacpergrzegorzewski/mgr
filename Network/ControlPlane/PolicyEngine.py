@@ -65,8 +65,8 @@ class PolicyEngine:
             # Count agent hash (MAC address + IP address)
             src_agent = count_agent_hash(src_pkt.mac_src.encode(), src_pkt.ip_src.encode())
             dst_agent = count_agent_hash(src_pkt.mac_dst.encode(), src_pkt.ip_dst.encode())
-            print("[INFO] Received new flow (" + str(flow) + ") from " + str(src_device) + " request. "
-                  "Source agent + " + str(src_agent) +
+            print("[INFO] Received new flow (" + str(flow) + ") from " + str(src_device) +
+                  " Source agent + " + str(src_agent) +
                   " destination agent: " + str(dst_agent) +
                   " values: " + str(src_pkt.to_hash))
 
