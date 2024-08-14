@@ -122,8 +122,8 @@ class Device:
                 print("[WARNING] Flow " + str(hash) + " dropped due to missing entry in LDB.")
         # outport in LDB
         else:
-            # print("[INFO] Sending data to " + str(hash) + " via " + str(outport))
-            print("[INFO] Sending " + str(data) + " to " + str(hash) + " via " + str(outport))
+            print("[INFO] Sending data to " + str(hash) + " via " + str(outport))
+            # print("[INFO] Sending " + str(data) + " to " + str(hash) + " via " + str(outport))
             if outport in self.ext_ifaces:
                 self._send(outport, data)
             else:
