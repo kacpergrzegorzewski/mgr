@@ -92,7 +92,7 @@ class Device:
         if outport is None:
             # find policy engine path
             policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_NEW_FLOW_HASH)
-            if hash == CONFIGURATOR_ADD_LINK_HASH:
+            if hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
                 print("[ERROR] Configurator outport not found in LDB!")
                 return
             if policy_engine_outport is None:
@@ -132,7 +132,6 @@ class Device:
     @threaded
     def sniff(self, prn, iface):
         """
-        Sniff for packets on interface
         :param prn:  function which will be triggered for every packet
         :param iface: name of interface
         :return: None
@@ -163,12 +162,12 @@ class Device:
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             if pkt.hash == BEACON_HASH:
                 beacon_hash, beacon_iface = pkt.extract_beacon_data()
-                # print("[INFO] Received Beacon from " + str(beacon_hash) +
-                #      ". Local interface: " + str(pkt.iface) +
-                #      ". Remote interface: " + str(beacon_iface))
+                print("[INFO] Received Beacon from " + str(beacon_hash) +
+                     ". Local interface: " + str(pkt.iface) +
+                     ". Remote interface: " + str(beacon_iface))
                 # send link discovery to configurator
                 data = self.device_hash + pkt.iface.encode() + beacon_hash + beacon_iface.encode()
-                self._send_wait(CONFIGURATOR_ADD_LINK_HASH, data, src_iface=pkt.iface)
+                self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data, src_iface=pkt.iface)
             elif pkt.hash == self.device_hash:
                 flow, outport, timeout = pkt.extract_ldb_add_entry_data()
                 print("[INFO] Received new LDB entry. Flow " + str(flow) + " via " + str(outport))
@@ -192,7 +191,7 @@ class Device:
             while self.BEACON_STATUS:
                 # send beacon on all internal interfaces
                 for iface in self.int_ifaces:
-                    # print("[INFO] sending beacon on interface " + str(iface))
+                    print("[INFO] sending beacon on interface " + str(iface))
                     data = BEACON_HASH + self.device_hash + iface.encode()
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon

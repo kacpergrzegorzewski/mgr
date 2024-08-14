@@ -58,8 +58,8 @@ class Configurator:
     @threaded
     def recv(self, pkt):
         pkt = InternalPacket(pkt)
-        if pkt.hash == CONFIGURATOR_ADD_LINK_HASH:
-            src_hash, src_iface, dst_hash, dst_iface = pkt.extract_configurator_add_link_data()
+        if pkt.hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
+            src_hash, src_iface, dst_hash, dst_iface = pkt.extract_configurator_link_discovery_data()
             # print("[INFO] Received link discovery packet from " + str(src_hash) + " (" + str(src_iface) + ") to " +
             #      str(dst_hash) + " (" + str(dst_iface) + ")")
             self.tdb.update_node(src_hash)

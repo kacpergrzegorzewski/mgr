@@ -39,7 +39,7 @@ def ldb_test():
 
 
 def add_configurator_path(ldb, iface):
-    _hash = CONFIGURATOR_ADD_LINK_HASH
+    _hash = CONFIGURATOR_LINK_DISCOVERY_HASH
     ldb.add_flow(_hash, iface)
     print("[INFO] Path to configurator add link via: " + str(ldb.get_outport(_hash)))
     _hash = CONFIGURATOR_ADD_FLOW_HASH
