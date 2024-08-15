@@ -13,7 +13,7 @@ def threaded(fn):
 
 class LDBSQLite:
     DELETE_OLD_FLOWS = True
-    DELETE_OLD_FLOWS_INTERVAL = 5
+    DELETE_OLD_FLOWS_INTERVAL = 0.5
     PRINT_LDB = True
     PRINT_LDB_INTERVAL = 10
 
