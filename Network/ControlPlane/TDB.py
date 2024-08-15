@@ -22,12 +22,17 @@ class TDB:
     TDB_PRINT_INTERVAL = 10
     REMOVE_OLD_LINKS = True
     REMOVE_OLD_LINKS_INTERVAL = 1
+    PRINT_STATISTICS = True
+    PRINT_STATISTICS_INTERVAL = 10
 
     def __init__(self):
         # self.edge_lock = threading.Lock()
+        self.sum_of_path_calculations_time = 0  # ms
+        self.number_of_path_calculations = 0
         self.tdb = nx.DiGraph()
         self.print_current_state()
         self.remove_old_links()
+        self.print_statistics()
 
     def update_node(self, node):
         # TODO remove nodes after NODE_TIMEOUT
@@ -66,12 +71,18 @@ class TDB:
         return
 
     def get_path(self, source=None, destination=None):
+        path = []
+        time_before = time.time_ns()
         if source in self.tdb.nodes and destination in self.tdb.nodes:
             try:
-                return nx.shortest_path(self.tdb, source, destination).copy()
+                path = nx.shortest_path(self.tdb, source, destination).copy()
             except nx.exception.NetworkXNoPath:
-                return []
-        return []
+                path = []
+        time_after = time.time_ns()
+        self.sum_of_path_calculations_time += (time_after - time_before) / 1_000_000  # ms
+        self.number_of_path_calculations += 1
+        return path
+
 
     def get_all_paths(self):
         return nx.shortest_path(self.tdb).copy()
@@ -111,3 +122,14 @@ class TDB:
                 self.tdb.remove_edge(*edge)
             # self.edge_lock.release()
             time.sleep(self.REMOVE_OLD_LINKS_INTERVAL)
+
+    @threaded
+    def print_statistics(self):
+        while self.PRINT_STATISTICS:
+            print("============ statistics ============")
+            print(time.ctime())
+            if self.number_of_path_calculations != 0:
+                print("Number of path calculations: " + str(self.number_of_path_calculations))
+                print("Average path calculation time: " + str(self.sum_of_path_calculations_time/self.number_of_path_calculations) + "ms")
+            print("====================================")
+            time.sleep(self.PRINT_STATISTICS_INTERVAL)

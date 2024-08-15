@@ -26,6 +26,9 @@ def count_agent_hash(*args: bytes):
 
 
 class PolicyEngine:
+    PRINT_STATISTICS = True
+    PRINT_STATISTICS_INTERVAL = 10
+
     def __init__(self, iface, allowed_flows=None, flow_timeout=10):
         print(time.ctime() + " [INFO] Initializing Policy Engine")
         self.iface = iface
@@ -36,10 +39,13 @@ class PolicyEngine:
         else:
             print(time.ctime() + " [ERROR] Allowed flows are in an invalid format!")
         self.flow_timeout = flow_timeout
+        self.sum_of_checks_time = 0
+        self.number_of_checks = 0
 
         self.socket = socket(PF_PACKET, SOCK_RAW)
         self.socket.bind((iface, 0))
         self.sniff(self.recv, self.iface)
+        self.print_statistics()
 
     def send(self, hash, data):
         self.socket.send(hash + data)
@@ -54,6 +60,18 @@ class PolicyEngine:
         """
 
         sniff(prn=prn, iface=iface)
+
+    def check_flow(self, flow):
+        time_before = time.time_ns()
+        if flow in self.allowed_flows:
+            allowed = True
+        else:
+            allowed = False
+        time_after = time.time_ns()
+        self.sum_of_checks_time += (time_after - time_before) / 1_000_000  # ms
+        self.number_of_checks += 1
+
+        return allowed
 
     def recv(self, pkt):
         pkt = InternalPacket(pkt)
@@ -74,7 +92,8 @@ class PolicyEngine:
             self.update_configurator_agent(src_agent, src_device, src_iface)
 
             # Allow only flows from allowed flows list
-            if flow in self.allowed_flows:
+
+            if self.check_flow(flow):
                 self.add_configurator_flow(flow, src_agent, dst_agent)
                 print(time.ctime() + " [INFO] Allow flow " + str(flow))
             # Drop packet
@@ -94,3 +113,14 @@ class PolicyEngine:
         timeout = int(time.time() + self.flow_timeout).to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER)
         _data = flow + src_agent + dst_agent + timeout
         self.send(_hash, _data)
+
+    @threaded
+    def print_statistics(self):
+        while self.PRINT_STATISTICS:
+            print("============ statistics ============")
+            print(time.ctime())
+            if self.number_of_checks != 0:
+                print("Number of checks: " + str(self.number_of_checks))
+                print("Average check time: " + str(self.sum_of_checks_time/self.number_of_checks) + "ms")
+            print("====================================")
+            time.sleep(self.PRINT_STATISTICS_INTERVAL)
