@@ -142,7 +142,7 @@ class LDBSQLite:
             if self.number_of_writes != 0:
                 print("Average write time: " + str(self.sum_of_write_time / self.number_of_writes) + "ms")
             if self.cache.number_of_hits + self.cache.number_of_misses != 0:
-                print("Cache hit ratio: " + str(self.cache.number_of_hits / (self.cache.number_of_misses + self.cache.number_of_hits)) + "ms")
+                print("Cache hit ratio: " + str(100*(self.cache.number_of_hits / (self.cache.number_of_misses + self.cache.number_of_hits))) + "%")
             print("flow,outport,endtime")
             rows = self.get_all()
             for row in rows:
