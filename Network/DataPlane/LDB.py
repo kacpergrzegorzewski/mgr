@@ -33,11 +33,8 @@ class LDBCache:
         self.queue[flow] = outport
 
     def remove(self, flow):
-        self.queue.pop(flow)
-
-    def remove_many(self, flows):
-        for flow in flows:
-            self.remove(flow)
+        if flow in self.queue:
+            self.queue.pop(flow)
 
     def is_hit(self, flow):
         if flow in self.queue:
