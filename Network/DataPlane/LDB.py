@@ -26,6 +26,8 @@ class FixSizedDict(dict):
 class LDBCache:
     def __init__(self, maxlen=0):
         self.queue = FixSizedDict(maxlen=maxlen)
+        self.number_of_hits = 0
+        self.number_of_misses = 0
 
     def add(self, flow, outport):
         self.queue[flow] = outport
@@ -38,7 +40,13 @@ class LDBCache:
             self.remove(flow)
 
     def is_hit(self, flow):
-        return flow in self.queue
+        if flow in self.queue:
+            hit = True
+            self.number_of_hits += 1
+        else:
+            hit = False
+            self.number_of_misses += 1
+        return hit
 
     def get_outport(self, flow):
         return self.queue[flow]
@@ -133,6 +141,8 @@ class LDBSQLite:
                 print("Average read time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ms")
             if self.number_of_writes != 0:
                 print("Average write time: " + str(self.sum_of_write_time / self.number_of_writes) + "ms")
+            if self.cache.number_of_hits + self.cache.number_of_misses != 0:
+                print("Cache hit ratio: " + str(self.cache.number_of_hits / (self.cache.number_of_misses + self.cache.number_of_hits)) + "ms")
             print("flow,outport,endtime")
             rows = self.get_all()
             for row in rows:
