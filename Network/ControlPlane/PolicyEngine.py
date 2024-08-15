@@ -73,6 +73,10 @@ class PolicyEngine:
 
         return allowed
 
+    def add_allowed_flow(self, flow):
+        if flow not in self.allowed_flows:
+            self.allowed_flows.append(flow)
+
     def recv(self, pkt):
         pkt = InternalPacket(pkt)
         if pkt.hash == POLICY_ENGINE_NEW_FLOW_HASH:
@@ -100,6 +104,7 @@ class PolicyEngine:
                     reverse_flow = Hasher.hash(src_pkt.to_hash_reverse)
                     self.add_configurator_flow(reverse_flow, dst_agent, src_agent)
                     print(time.ctime() + " [INFO] Allow reverse flow " + str(reverse_flow))
+                    self.add_allowed_flow(reverse_flow)
             # Drop packet
             else:
                 self.add_configurator_flow(flow, src_agent, src_agent)
