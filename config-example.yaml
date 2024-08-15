@@ -6,6 +6,7 @@ spec:
     extIfaces: [] # List of external interfaces (for edge devices)
     LDBType: "SQLite" # Only SQLite supported
     LDBPath: "" # Path to SQLite LDB file
+    LDBCacheSize: 100
     configuratorVia: "ens16" # Route to configurator
     policyEngineVia: "ens16" # Route to policy engine
   configurator:

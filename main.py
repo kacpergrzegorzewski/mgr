@@ -8,10 +8,10 @@ from Network.Base.Env import *
 import yaml
 
 
-def start_device(device_name, ldb_path, configurator_via, policy_engine_via, int_ifaces, ext_ifaces):
+def start_device(device_name, ldb_path, ldbcache_size, configurator_via, policy_engine_via, int_ifaces, ext_ifaces):
     device_hash = Hasher.hash(device_name.encode())
     print("[INFO] Starting device " + str(device_hash))
-    ldb = LDBSQLite(ldb_path)
+    ldb = LDBSQLite(ldb_path, ldbcache_size)
     add_configurator_path(ldb, configurator_via)
     add_policy_engine_new_flow_path(ldb, policy_engine_via)
     device = Device(device_hash=device_hash, ldb=ldb, int_ifaces=int_ifaces, ext_ifaces=ext_ifaces)
@@ -62,6 +62,7 @@ if __name__ == '__main__':
     if config["type"] == "device":
         start_device(config["spec"]["nodeName"],
                      config["spec"]["device"]["LDBPath"],
+                     config["spec"]["device"]["LDBCacheSize"],
                      config["spec"]["device"]["configuratorVia"],
                      config["spec"]["device"]["policyEngineVia"],
                      config["spec"]["device"]["intIfaces"],
