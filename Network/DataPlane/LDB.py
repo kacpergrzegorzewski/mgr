@@ -116,11 +116,12 @@ class LDBSQLite:
             query_delete = "DELETE FROM LDB WHERE endtime<" + current_time
             query_select = "SELECT hash FROM LDB WHERE endtime<" + current_time
             self.db_lock.acquire(True)
+            to_remove = self.cursor.execute(query_select).fetchall()
             self.cursor.execute(query_delete)
-            to_remove = self.cursor.execute(query_select)
             self.db.commit()
             self.db_lock.release()
-            self.cache.remove_many(to_remove)
+            for row in to_remove:
+                self.cache.remove(row[0])
             time.sleep(self.DELETE_OLD_FLOWS_INTERVAL)
 
     @threaded
