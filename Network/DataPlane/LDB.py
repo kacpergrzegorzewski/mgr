@@ -52,7 +52,7 @@ class LDBCache:
 class LDBSQLite:
     DELETE_OLD_FLOWS = True
     DELETE_OLD_FLOWS_INTERVAL = 0.5
-    PRINT_LDB = True
+    PRINT_LDB = False
     PRINT_LDB_INTERVAL = 10
 
     def __init__(self, filename, cache_size=0):
