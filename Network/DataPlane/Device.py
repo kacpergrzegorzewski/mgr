@@ -104,6 +104,7 @@ class Device:
                     # send request to policy engine
                     self._send(policy_engine_outport,
                                POLICY_ENGINE_NEW_FLOW_HASH + hash + self.device_hash + src_iface.encode() + data)
+                    print(time.ctime() + " [INFO] Send request to policy engine for flow " + str(hash))
                 # wait for LDB reconfiguration
                 while current_wait_time < MAX_PKT_WAIT:
                     outport = self.enforcement.enforce(hash)
