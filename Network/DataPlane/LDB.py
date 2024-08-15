@@ -81,6 +81,7 @@ class LDBSQLite:
     def get_outport(self, hash):
         self.db_lock.acquire(True)
         if self.cache.is_hit(hash):
+            self.db_lock.release()
             return self.cache.get_outport(hash)
         self.number_of_lookups += 1
         time_before = time.time_ns()
