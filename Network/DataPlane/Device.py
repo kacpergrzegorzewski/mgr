@@ -74,7 +74,7 @@ class Device:
         self.beacon()
 
         # Start printing statistics
-        # self.print_statistics()
+        self.print_statistics()
 
     def _send(self, iface, pkt: bytes):
         if iface != IFACE_NAME_DROP:
