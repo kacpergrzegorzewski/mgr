@@ -82,11 +82,11 @@ class LDBSQLite:
             self.db_lock.release()
 
     def get_outport(self, hash):
+        self.db_lock.acquire(True)
         if self.cache.is_hit(hash):
             return self.cache.get_outport(hash)
         self.number_of_lookups += 1
         time_before = time.time_ns()
-        self.db_lock.acquire(True)
         response = self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()
         self.db_lock.release()
         time_after = time.time_ns()
@@ -127,9 +127,9 @@ class LDBSQLite:
             to_remove = self.cursor.execute(query_select).fetchall()
             self.cursor.execute(query_delete)
             self.db.commit()
-            self.db_lock.release()
             for row in to_remove:
                 self.cache.remove(row[0])
+            self.db_lock.release()
             time.sleep(self.DELETE_OLD_FLOWS_INTERVAL)
 
     @threaded
