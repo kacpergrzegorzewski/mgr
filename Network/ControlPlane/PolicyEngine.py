@@ -27,14 +27,14 @@ def count_agent_hash(*args: bytes):
 
 class PolicyEngine:
     def __init__(self, iface, allowed_flows=None, flow_timeout=10):
-        print("[INFO] Initializing Policy Engine")
+        print(time.ctime() + " [INFO] Initializing Policy Engine")
         self.iface = iface
         if allowed_flows is None:
             self.allowed_flows = []
         elif type(allowed_flows) == list:
             self.allowed_flows = [Hasher.hash(allowed_flow.encode()) for allowed_flow in allowed_flows]
         else:
-            print("[ERROR] Allowed flows are in an invalid format!")
+            print(time.ctime() + " [ERROR] Allowed flows are in an invalid format!")
         self.flow_timeout = flow_timeout
 
         self.socket = socket(PF_PACKET, SOCK_RAW)
@@ -65,7 +65,7 @@ class PolicyEngine:
             # Count agent hash (MAC address + IP address)
             src_agent = count_agent_hash(src_pkt.mac_src.encode(), src_pkt.ip_src.encode())
             dst_agent = count_agent_hash(src_pkt.mac_dst.encode(), src_pkt.ip_dst.encode())
-            print("[INFO] Received new flow (" + str(flow) + ") from " + str(src_device) +
+            print(time.ctime() + " [INFO] Received new flow (" + str(flow) + ") from " + str(src_device) +
                   " Source agent + " + str(src_agent) +
                   " destination agent: " + str(dst_agent) +
                   " values: " + str(src_pkt.to_hash))
@@ -76,11 +76,11 @@ class PolicyEngine:
             # Allow only flows from allowed flows list
             if flow in self.allowed_flows:
                 self.add_configurator_flow(flow, src_agent, dst_agent)
-                print("[INFO] Allow flow " + str(flow))
+                print(time.ctime() + " [INFO] Allow flow " + str(flow))
             # Drop packet
             else:
                 self.add_configurator_flow(flow, src_agent, src_agent)
-                print("[INFO] Deny flow " + str(flow))
+                print(time.ctime() + " [INFO] Deny flow " + str(flow))
 
     @threaded
     def update_configurator_agent(self, agent_hash, edge_hash, edge_iface: str):

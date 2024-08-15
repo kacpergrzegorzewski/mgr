@@ -93,10 +93,10 @@ class Device:
             # find policy engine path
             policy_engine_outport = self.enforcement.enforce(POLICY_ENGINE_NEW_FLOW_HASH)
             if hash == CONFIGURATOR_LINK_DISCOVERY_HASH:
-                print("[ERROR] Configurator outport not found in LDB!")
+                print(time.ctime() + " [ERROR] Configurator outport not found in LDB!")
                 return
             if policy_engine_outport is None:
-                print("[ERROR] Policy engine outport not found in LDB!")
+                print(time.ctime() + " [ERROR] Policy engine outport not found in LDB!")
                 return
             else:
                 time_before = time.time_ns()
@@ -111,7 +111,7 @@ class Device:
                         time_after = time.time_ns()
                         self.time_of_pkt_wait += (time_after-time_before) / 1_000_000  # time in ms
                         self.number_of_pkt_wait += 1
-                        print("[INFO] Sending data to" + str(hash) + " via " + str(outport))
+                        print(time.ctime() + " [INFO] Sending data to" + str(hash) + " via " + str(outport))
                         if outport in self.ext_ifaces:
                             self._send(outport, data)
                         else:
@@ -119,10 +119,10 @@ class Device:
                         return
                     time.sleep(current_wait_time)
                     current_wait_time += MIN_PKT_WAIT
-                print("[WARNING] Flow " + str(hash) + " dropped due to missing entry in LDB.")
+                print(time.ctime() + " [WARNING] Flow " + str(hash) + " dropped due to missing entry in LDB.")
         # outport in LDB
         else:
-            print("[INFO] Sending data to " + str(hash) + " via " + str(outport))
+            print(time.ctime() + " [INFO] Sending data to " + str(hash) + " via " + str(outport))
             # print("[INFO] Sending " + str(data) + " to " + str(hash) + " via " + str(outport))
             if outport in self.ext_ifaces:
                 self._send(outport, data)
@@ -148,7 +148,7 @@ class Device:
         pkt = ExternalPacket(pkt)
         # check if packet is not in last sent packets (sniff also captures sent packets)
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
-            print("[INFO] Received external packet with values: " + str(pkt.to_hash))
+            print(time.ctime() + "[INFO] Received external packet with values: " + str(pkt.to_hash))
             flow_hash = Hasher.hash(pkt.to_hash)
             self._send_wait(flow_hash, pkt.raw_pkt, src_iface=pkt.iface)
 
@@ -163,7 +163,7 @@ class Device:
         if self.lastPacket[pkt.iface].count(pkt.raw_pkt) == 0:
             if pkt.hash == BEACON_HASH:
                 beacon_hash, beacon_iface = pkt.extract_beacon_data()
-                print("[INFO] Received Beacon from " + str(beacon_hash) +
+                print(time.ctime() + " [INFO] Received Beacon from " + str(beacon_hash) +
                      ". Local interface: " + str(pkt.iface) +
                      ". Remote interface: " + str(beacon_iface))
                 # send link discovery to configurator
@@ -171,10 +171,10 @@ class Device:
                 self._send_wait(CONFIGURATOR_LINK_DISCOVERY_HASH, data, src_iface=pkt.iface)
             elif pkt.hash == self.device_hash:
                 flow, outport, timeout = pkt.extract_ldb_add_entry_data()
-                print("[INFO] Received new LDB entry. Flow " + str(flow) + " via " + str(outport))
+                print(time.ctime() + " [INFO] Received new LDB entry. Flow " + str(flow) + " via " + str(outport))
                 self.ldb.add_flow(*pkt.extract_ldb_add_entry_data())
             else:
-                print("[INFO] Received internal packet with hash: " + str(pkt.hash))
+                print(time.ctime() + " [INFO] Received internal packet with hash: " + str(pkt.hash))
                 self._send_wait(pkt.hash, pkt.data, src_iface=pkt.iface)
 
     @threaded
@@ -192,7 +192,7 @@ class Device:
             while self.BEACON_STATUS:
                 # send beacon on all internal interfaces
                 for iface in self.int_ifaces:
-                    print("[INFO] sending beacon on interface " + str(iface))
+                    print(time.ctime() + " [INFO] sending beacon on interface " + str(iface))
                     data = BEACON_HASH + self.device_hash + iface.encode()
                     self._send(iface, data)
                 # wait BEACON_INTERVAL before sending next beacon
@@ -202,6 +202,7 @@ class Device:
     def print_statistics(self):
         while self.PRINT_STATISTICS:
             print("============ statistics ============")
+            print(time.ctime())
             if self.number_of_pkt_wait != 0:
                 print("Number of packet wait: " + str(self.number_of_pkt_wait))
                 print("Average packet wait: " + str(self.time_of_pkt_wait/self.number_of_pkt_wait) + "ms")

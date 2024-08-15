@@ -85,6 +85,7 @@ class LDBSQLite:
     def _print_ldb(self):
         while self.PRINT_LDB:
             print("========================= Current LDB state =========================")
+            print(time.ctime())
             if self.number_of_lookups != 0:
                 print("Average read time: " + str(self.sum_of_lookup_time / self.number_of_lookups) + "ms")
             if self.number_of_writes != 0:

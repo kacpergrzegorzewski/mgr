@@ -23,7 +23,7 @@ class Configurator:
     CREATE_INTERNAL_PATHS = True
 
     def __init__(self, iface, node_lifetime, link_lifetime, path_lifetime, create_paths_interval):
-        print("[INFO] Initializing Configurator")
+        print(time.ctime() + " [INFO] Initializing Configurator")
         self.iface = iface
         self.tdb = TDB()
         self.node_lifetime = int(node_lifetime)
@@ -74,14 +74,14 @@ class Configurator:
 
         elif pkt.hash == CONFIGURATOR_ADD_FLOW_HASH:
             flow, src_device, dst_device, timeout = pkt.extract_configurator_add_flow_data()
-            print("[INFO] Received add flow: " + str(flow) + " src: " + str(src_device) + " dst: " + str(dst_device) + " endtime " + str(timeout))
+            print(time.ctime() + " [INFO] Received add flow: " + str(flow) + " src: " + str(src_device) + " dst: " + str(dst_device) + " endtime " + str(timeout))
             path = self.tdb.get_path(source=src_device, destination=dst_device)
             current_wait = MIN_TDB_WAIT
             while len(path) == 0:
                 path = self.tdb.get_path(source=src_device, destination=dst_device)
                 current_wait *= 2
                 if current_wait > MAX_TDB_WAIT:
-                    print("[WARNING] Path from " + str(src_device) + " to " + str(dst_device) + " not found.")
+                    print(time.ctime() + " [WARNING] Path from " + str(src_device) + " to " + str(dst_device) + " not found.")
                     return
                 time.sleep(current_wait)
             # Configure all nodes in path except last one (skip if length of path is 1 -- path to self)
@@ -98,17 +98,17 @@ class Configurator:
                                         timeout=timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
                     # increment timeout for every device
                     timeout += 1
-                    print("[INFO] Sent to " + str(node) + " flow " + str(flow) + " via " + str(src_iface))
+                    print(time.ctime() + " [INFO] Sent to " + str(node) + " flow " + str(flow) + " via " + str(src_iface))
 
             # Add drop to every adjacent node if source and destination are the same
             if src_device == dst_device:
                 for node in self.tdb.get_neighbors(src_device):
                     self.send_ldb_entry(device=node, flow=flow, outport=IFACE_NAME_DROP.encode(), timeout=timeout.to_bytes(length=EPOCH_TIME_LENGTH, byteorder=NETWORK_BYTEORDER))
-                    print("[INFO] Sent drop " + str(flow) + " to node " + str(node))
+                    print(time.ctime() + " [INFO] Sent drop " + str(flow) + " to node " + str(node))
 
         elif pkt.hash == CONFIGURATOR_UPDATE_AGENT_HASH:
             agent_hash, device_hash, device_iface = pkt.extract_configurator_update_agent_data()
-            print("[INFO] Received update agent: " + str(agent_hash))
+            print(time.ctime() + " [INFO] Received update agent: " + str(agent_hash))
             self.tdb.update_node(agent_hash)
             self.tdb.update_node(device_hash)
             # agent -> device
