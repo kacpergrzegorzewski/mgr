@@ -136,5 +136,6 @@ class LDBSQLite:
             rows = self.get_all()
             for row in rows:
                 print(row)
+            print(self.cache.queue)
             print("=====================================================================")
             time.sleep(self.PRINT_LDB_INTERVAL)
