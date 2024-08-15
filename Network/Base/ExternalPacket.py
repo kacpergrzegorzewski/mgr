@@ -31,12 +31,15 @@ class ExternalPacket:
         if "TCP" in self.layers:
             self.src_port = self.pkt["TCP"].sport
             self.dst_port = self.pkt["TCP"].dport
+            self.reverse_flow_required = True
         elif "UDP" in self.layers:
             self.src_port = self.pkt["UDP"].sport
             self.dst_port = self.pkt["UDP"].dport
+            self.reverse_flow_required = False
         else:
             self.src_port = None
             self.dst_port = None
+            self.reverse_flow_required = False
 
         self.to_hash = b''
         for layer_name in self.layers:
@@ -48,6 +51,18 @@ class ExternalPacket:
         if self.dst_port is not None:
             # port number is 16 bits = 2 bytes
             self.to_hash += self.dst_port.to_bytes(length=2, byteorder=NETWORK_BYTEORDER)
+
+        self.to_hash_reverse = b''
+        for layer_name in self.layers:
+            self.to_hash_reverse += layer_name.encode()
+        self.to_hash_reverse += self.mac_dst.encode()
+        self.to_hash_reverse += self.mac_src.encode()
+        self.to_hash_reverse += self.ip_dst.encode()
+        self.to_hash_reverse += self.ip_src.encode()
+        if self.src_port is not None:
+            # port number is 16 bits = 2 bytes
+            self.to_hash += self.src_port.to_bytes(length=2, byteorder=NETWORK_BYTEORDER)
+
 
     def get_layers(self):
         counter = 0
