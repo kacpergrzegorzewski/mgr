@@ -61,7 +61,7 @@ class ExternalPacket:
         self.to_hash_reverse += self.ip_src.encode()
         if self.src_port is not None:
             # port number is 16 bits = 2 bytes
-            self.to_hash += self.src_port.to_bytes(length=2, byteorder=NETWORK_BYTEORDER)
+            self.to_hash_reverse += self.src_port.to_bytes(length=2, byteorder=NETWORK_BYTEORDER)
 
 
     def get_layers(self):
