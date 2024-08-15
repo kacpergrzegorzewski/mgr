@@ -103,7 +103,7 @@ class PolicyEngine:
                 if src_pkt.reverse_flow_required:
                     reverse_flow = Hasher.hash(src_pkt.to_hash_reverse)
                     self.add_configurator_flow(reverse_flow, dst_agent, src_agent)
-                    print(time.ctime() + " [INFO] Allow reverse flow " + str(reverse_flow))
+                    print(time.ctime() + " [INFO] Allow reverse flow " + str(reverse_flow) + " Values: " + str(src_pkt.to_hash_reverse))
                     self.add_allowed_flow(reverse_flow)
             # Drop packet
             else:
