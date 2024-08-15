@@ -79,11 +79,10 @@ class LDBSQLite:
             self.db_lock.release()
 
     def get_outport(self, hash):
-        self.db_lock.acquire(True)
         if self.cache.is_hit(hash):
-            self.db_lock.release()
             return self.cache.get_outport(hash)
         self.number_of_lookups += 1
+        self.db_lock.acquire(True)
         time_before = time.time_ns()
         response = self.cursor.execute("SELECT outport FROM ldb WHERE hash=?", (hash,)).fetchone()
         self.db_lock.release()
