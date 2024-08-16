@@ -57,12 +57,12 @@ class TDB:
             print("[WARNING] Link src: " + str(source) + " dst: " + str(destination) + " not found!")
 
     @threaded
-    def update_link(self, start, end, src_iface, dst_iface, link_lifetime=10):
+    def update_link(self, start, end, src_iface, dst_iface, link_lifetime=10, weight=100):
         endtime = int(time.time() + link_lifetime)
         if start and end in self.tdb.nodes:
-            #self.edge_lock.acquire(True)
-            self.tdb.add_edge(start, end, src_iface=src_iface, dst_iface=dst_iface, endtime=endtime)
-            #self.edge_lock.release()
+            if end == b'\x03^\xe5\xb5\xb3,\xfa\xa0\xd3e\x89\xd8Y+\xaf\xe5':  # Prefer Core02 in path
+                weight = 10
+            self.tdb.add_edge(start, end, src_iface=src_iface, dst_iface=dst_iface, endtime=endtime, weight=weight)
         else:
             print("[WARNING] Node does not exist. Link " + str(start) + " -> " + str(end) + " not created in TDB.")
 
@@ -75,7 +75,7 @@ class TDB:
         time_before = time.time_ns()
         if source in self.tdb.nodes and destination in self.tdb.nodes:
             try:
-                path = nx.shortest_path(self.tdb, source, destination).copy()
+                path = nx.shortest_path(self.tdb, source, destination, weight="weight").copy()
             except nx.exception.NetworkXNoPath:
                 path = []
         time_after = time.time_ns()
