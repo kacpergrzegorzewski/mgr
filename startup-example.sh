@@ -4,6 +4,7 @@ for interface in "${interfaces[@]}"
 do
 	ip link set up $interface
 	ip link set $interface arp off
+	ip link set dev $interface mtu 9000
 	sysctl -w net.ipv6.conf.$interface.disable_ipv6=1
 done
 #ip link set up ens16
