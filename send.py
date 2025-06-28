@@ -2,7 +2,7 @@ from socket import socket, AF_PACKET, PF_PACKET, SOCK_RAW, IPPROTO_RAW
 import struct
 import time
 
-BANDWIDTH_TEST_MESSAGE_LENGTH = 1500 #bytes
+BANDWIDTH_TEST_MESSAGE_LENGTH = 15000 #bytes
 
 _socket = socket(PF_PACKET, SOCK_RAW)
 _socket.bind(('ens16', 0))
