@@ -49,3 +49,4 @@ def sniff_threaded():
 
 if __name__ == '__main__':
     sniff_threaded()
+    count_packets()
