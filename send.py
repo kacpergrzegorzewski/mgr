@@ -41,4 +41,5 @@ def send(data, iface):
 
 
 if __name__ == '__main__':
-    print(generate_bandwidth_test_message())
+    test_message = generate_bandwidth_test_message()
+    send_bandwidth_test(test_message)
