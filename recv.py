@@ -23,7 +23,7 @@ def edge(pkt):
     print(pkt)
     print(pkt)
 
-def increment_packet_counter():
+def increment_packet_counter(pkt):
     global PACKET_COUNTER
     PACKET_COUNTER += 1
 
