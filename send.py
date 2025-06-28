@@ -5,7 +5,7 @@ import time
 BANDWIDTH_TEST_MESSAGE_LENGTH = 1500 #bytes
 
 _socket = socket(PF_PACKET, SOCK_RAW)
-_socket.bind(('ens28', 0))
+_socket.bind(('ens16', 0))
 
 def send_simple_message():
     data = (
