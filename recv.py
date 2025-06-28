@@ -7,7 +7,7 @@ from scapy.all import sniff, bytes_hex
 IFACE = 'ens16'
 PACKET_COUNTER = 0
 PRINT_PACKET_COUNTER = True
-BANDWIDTH_TEST_MESSAGE_LENGTH = 15000
+BANDWIDTH_TEST_MESSAGE_LENGTH = 9000
 
 def threaded(fn):
     def wrapper(*args, **kwargs):
