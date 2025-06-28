@@ -41,7 +41,7 @@ def count_packets():
         time_passed = time_after - time_before
         packets_passed = packet_counter_after - packet_counter_before
         mbs = packets_passed * BANDWIDTH_TEST_MESSAGE_LENGTH / time_passed / 1024
-        print("Received " + str(packets_passed) + " in " + str(time_passed) + " (" + str(mbs) + " KB/s)")
+        print("Received " + str(packets_passed) + " packets in " + str(time_passed) + " (" + str(mbs) + " KB/s)")
 
 @threaded
 def sniff_threaded():
